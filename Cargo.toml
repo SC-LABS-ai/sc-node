@@ -1,4 +1,4 @@
-﻿[package]
+[package]
 name = "sc-agent"
 version = "0.1.0"
 edition = "2024"
@@ -50,7 +50,7 @@ anyhow = "1"
 thiserror = "1"
 clap = { version = "4", features = ["derive", "env"] }
 toml = "0.8"
-dirs = "5"
+dirs = "6"
 async-trait = "0.1"
 futures = "0.3"
 tokio-stream = "0.1"
