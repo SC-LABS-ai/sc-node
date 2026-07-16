@@ -503,12 +503,20 @@ mod tests {
     #[tokio::test]
     async fn test_write_then_read_file_case_insensitive_path_same_workspace() {
         let dir = tempfile::tempdir().unwrap();
-        let ctx = ctx_with_workspace(dir.path());
+        // The boundary check resolves candidates to their real on-disk
+        // location (expanding 8.3 short names and junctions, both common in
+        // CI runner temp dirs), so an allow-expecting test must build its
+        // workspace from the same real form. Strip the `\\?\` verbatim
+        // prefix that `canonicalize` adds on Windows.
+        let canon = dir.path().canonicalize().unwrap();
+        let canon_str = canon.to_string_lossy().into_owned();
+        let root = std::path::PathBuf::from(canon_str.strip_prefix(r"\\?\").unwrap_or(&canon_str));
+        let ctx = ctx_with_workspace(&root);
 
         let write_result = WriteFileTool
             .execute(
                 serde_json::json!({"path": "Notes.txt", "content": "hello"}),
-                ctx_with_workspace(dir.path()),
+                ctx_with_workspace(&root),
             )
             .await
             .unwrap();
@@ -518,8 +526,7 @@ mod tests {
         // workspace boundary check must not reject it (Windows filesystems
         // are case-insensitive), even though the requested case differs
         // from what was written.
-        let upper_path = dir
-            .path()
+        let upper_path = root
             .to_string_lossy()
             .to_ascii_uppercase()
             .replace(['/', '\\'], "\\");
