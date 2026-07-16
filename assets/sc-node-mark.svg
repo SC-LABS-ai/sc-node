@@ -1,0 +1,25 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" width="64" height="64" role="img" aria-label="SC Node mark">
+  <style>
+    .ink{fill:#0F172A}.ink-s{stroke:#0F172A}.acc{fill:#1B8DEB}.acc-s{stroke:#1B8DEB}
+    @media (prefers-color-scheme: dark){.ink{fill:#E6EDF3}.ink-s{stroke:#E6EDF3}.acc{fill:#47ADFF}.acc-s{stroke:#47ADFF}}
+  </style>
+  <!-- octagonal node frame -->
+  <path class="ink-s" d="M41.9 8 L56 22.1 V41.9 L41.9 56 H22.1 L8 41.9 V22.1 L22.1 8 Z" fill="none" stroke-width="3.5" stroke-linejoin="round"/>
+  <!-- candidate routes (muted) -->
+  <g class="ink-s" stroke-width="2.5" opacity="0.4">
+    <line x1="32" y1="32" x2="32" y2="12"/>
+    <line x1="32" y1="32" x2="12" y2="32"/>
+    <line x1="32" y1="32" x2="32" y2="52"/>
+  </g>
+  <g class="ink" opacity="0.4">
+    <circle cx="32" cy="12" r="3"/>
+    <circle cx="12" cy="32" r="3"/>
+    <circle cx="32" cy="52" r="3"/>
+  </g>
+  <!-- resolved route (deterministic) -->
+  <line x1="32" y1="32" x2="52" y2="32" class="acc-s" stroke-width="4" stroke-linecap="round"/>
+  <circle cx="52" cy="32" r="4" class="acc"/>
+  <!-- core execution node -->
+  <circle class="ink" cx="32" cy="32" r="7"/>
+  <circle cx="32" cy="32" r="3" class="acc"/>
+</svg>

@@ -1,0 +1,21 @@
+﻿[package]
+name = "sc-sandbox"
+version = { workspace = true }
+edition = "2024"
+license = { workspace = true }
+repository = { workspace = true }
+description = "Path sandboxing and process isolation for SC Node"
+categories = { workspace = true }
+keywords = { workspace = true }
+
+[dependencies]
+shellexpand = { workspace = true }
+tokio = { workspace = true }
+anyhow = { workspace = true }
+serde = { workspace = true }
+thiserror = { workspace = true }
+sc-config = { path = "../sc-config" }
+
+[dev-dependencies]
+tempfile = { workspace = true }
+

@@ -1,0 +1,20 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 300 64" width="300" height="64" role="img" aria-label="SC Node logo">
+  <!-- mark -->
+  <path d="M41.9 8 L56 22.1 V41.9 L41.9 56 H22.1 L8 41.9 V22.1 L22.1 8 Z" fill="none" stroke="#0F172A" stroke-width="3.5" stroke-linejoin="round"/>
+  <g stroke="#0F172A" stroke-width="2.5" opacity="0.4">
+    <line x1="32" y1="32" x2="32" y2="12"/>
+    <line x1="32" y1="32" x2="12" y2="32"/>
+    <line x1="32" y1="32" x2="32" y2="52"/>
+  </g>
+  <g fill="#0F172A" opacity="0.4">
+    <circle cx="32" cy="12" r="3"/>
+    <circle cx="12" cy="32" r="3"/>
+    <circle cx="32" cy="52" r="3"/>
+  </g>
+  <line x1="32" y1="32" x2="52" y2="32" stroke="#1B8DEB" stroke-width="4" stroke-linecap="round"/>
+  <circle cx="52" cy="32" r="4" fill="#1B8DEB"/>
+  <circle cx="32" cy="32" r="7" fill="#0F172A"/>
+  <circle cx="32" cy="32" r="3" fill="#1B8DEB"/>
+  <!-- wordmark -->
+  <text x="76" y="42" font-family="'Segoe UI', system-ui, -apple-system, 'Helvetica Neue', Arial, sans-serif" font-size="30" font-weight="700" letter-spacing="0.5" fill="#0F172A">SC <tspan fill="#1B8DEB">NODE</tspan></text>
+</svg>

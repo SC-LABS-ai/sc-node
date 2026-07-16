@@ -1,0 +1,17 @@
+[package]
+name = "sc-contract"
+version = { workspace = true }
+edition = "2024"
+license = { workspace = true }
+repository = { workspace = true }
+description = "Versioned execution contracts and preflight checks for SC Node"
+categories = { workspace = true }
+keywords = { workspace = true }
+
+[dependencies]
+serde = { workspace = true }
+serde_json = { workspace = true }
+toml = { workspace = true }
+sha2 = { workspace = true }
+hex = { workspace = true }
+thiserror = { workspace = true }

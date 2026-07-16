@@ -1,0 +1,181 @@
+﻿# SC Node â€” Example Configuration
+#
+# Copy this file to ~/.sc-agent/config.toml and edit as needed.
+# Or run: sc-agent init (creates default config)
+# Or run: sc-agent config show (displays current config)
+#
+# NOTE: API keys should NEVER be placed in this file.
+# Use environment variables instead:
+#   - OpenRouter: SC_AGENT_OPENROUTER_API_KEY
+#   - NVIDIA:     SC_AGENT_NVIDIA_API_KEY
+
+# â”€â”€ General settings â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+[general]
+# Log level: trace, debug, info, warn, error
+log_level = "info"
+
+# Data directory for audit logs, cache, etc.
+# Use ~ for home directory expansion.
+data_dir = "~/.sc-agent"
+
+# Disable all telemetry (must remain true)
+no_telemetry = true
+
+# â”€â”€ Workspace allowlist â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+# Only paths matching these patterns are accessible to tools.
+# Leave empty to deny all filesystem access.
+# Patterns support glob syntax and ~ expansion.
+[workspace]
+allow = [
+    "~/projects",
+    "~/Documents",
+]
+
+# Paths explicitly denied even if parent is allowed.
+# Deny patterns take precedence over allow.
+deny = [
+    "~/.ssh",
+    "~/.aws",
+    "~/.gnupg",
+    "**/.git/**",
+    "**/.env*",
+    "**/node_modules/**",
+    "**/target/**",
+]
+
+# â”€â”€ Tool Permissions â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+# default_policy: "allow" | "deny" | "ask"
+# Per-tool overrides below.
+[permissions]
+default_policy = "ask"
+
+# Shell tool â€” high risk, defaults to "ask"
+[permissions.tools.shell]
+policy = "ask"
+
+# Commands whose start matches one of these prefixes are eligible under the
+# tool policy above (with policy = "ask" they map to an approval decision).
+# NOTE: "ask" prompts interactively in `sc-agent repl` on a real terminal
+# ([Approval Required] ... y/N/a). In `sc-agent run` and non-interactive
+# sessions, "ask" auto-denies (fail-closed). "deny" always wins over allow.
+allow_patterns = [
+    "cargo ",
+    "rustc ",
+    "git ",
+    "ls ",
+    "cat ",
+    "grep ",
+    "rg ",
+    "find ",
+    "mkdir ",
+    "touch ",
+    "echo ",
+]
+
+# Commands containing any of these substrings are denied (enforced at runtime;
+# deny always wins over allow). This is a substring blocklist, not a full
+# command parser, so it is a backstop rather than a complete guarantee.
+deny_patterns = [
+    "rm -rf",
+    "sudo ",
+    "chmod 777",
+    "curl | sh",
+    "wget | sh",
+    "| sh",
+    "|sh",
+    "| bash",
+    "|bash",
+    "> /dev/sd*",
+    "dd if=",
+    "mkfs",
+    "format ",
+    "shutdown",
+    "reboot",
+]
+
+# File tools â€” moderate risk
+[permissions.tools.file]
+policy = "ask"
+allow_patterns = [
+    "*.md",
+    "*.txt",
+    "*.json",
+    "*.toml",
+    "*.yaml",
+    "*.rs",
+    "*.py",
+    "*.js",
+    "*.ts",
+    "*.html",
+    "*.css",
+]
+# Sensitive-file patterns are auto-denied even if an allow pattern would
+# otherwise match (defense in depth; deny always wins over allow).
+deny_patterns = [
+    "*.key",
+    "*.pem",
+    "id_rsa*",
+    "*.secret",
+    "credentials*",
+]
+
+# â”€â”€ Providers â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+
+# Ollama â€” LOCAL model (no API key, enabled by default)
+[providers.ollama]
+enabled = true
+base_url = "http://localhost:11434"      # default Ollama endpoint
+default_model = "llama3.2:3b"            # model name in Ollama
+keep_alive = "5m"                        # Ollama keep-alive duration
+timeout_secs = 120                       # timeout for local inference
+max_retries = 2
+
+# OpenRouter â€” CLOUD model aggregator
+# âš  Disabled by default. Set enabled = true to use.
+# API key goes in environment: SC_AGENT_OPENROUTER_API_KEY
+[providers.openrouter]
+enabled = false
+base_url = "https://openrouter.ai/api/v1"
+default_model = "openai/gpt-4.1-mini"
+timeout_secs = 60
+max_retries = 3
+
+# NVIDIA NIM â€” CLOUD model API
+# âš  Disabled by default. Set enabled = true to use.
+# API key goes in environment: SC_AGENT_NVIDIA_API_KEY
+[providers.nvidia]
+enabled = false
+base_url = "https://integrate.api.nvidia.com/v1"
+default_model = "meta/llama-3.3-70b-instruct"
+timeout_secs = 60
+max_retries = 3
+
+# â”€â”€ Model Routing â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+# First matching rule wins. Fallback is used if no rule matches.
+[routing]
+fallback_provider = "ollama"
+fallback_model = "llama3.2:3b"
+
+[[routing.rules]]
+name = "code-tasks"
+match_contains = ["code", "rust", "cargo", "clippy", "compile", "build"]
+provider = "ollama"
+model = "codellama:7b"
+
+[[routing.rules]]
+name = "research-tasks"
+match_contains = ["research", "search", "find", "lookup", "arxiv"]
+provider = "openrouter"
+model = "perplexity/sonar-pro"
+
+# â”€â”€ Audit Log â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+[audit]
+enabled = true
+path = "audit.log"                       # absolute path recommended; a relative
+                                         # path currently resolves against the
+                                         # process working directory, not data_dir
+                                         # (known alpha limitation)
+max_size_mb = 100                        # rotate when log reaches this size
+max_files = 10                           # keep at most N rotated files
+log_args = false                         # do NOT log tool arguments (privacy)
+log_output = false                       # do NOT log tool output (privacy)

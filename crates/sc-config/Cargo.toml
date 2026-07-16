@@ -1,0 +1,21 @@
+﻿[package]
+name = "sc-config"
+version = { workspace = true }
+edition = "2024"
+license = { workspace = true }
+repository = { workspace = true }
+description = "Configuration types for SC Node"
+categories = { workspace = true }
+keywords = { workspace = true }
+
+[dependencies]
+serde = { workspace = true }
+toml = { workspace = true }
+dirs = { workspace = true }
+shellexpand = { workspace = true }
+sc-message-types = { path = "../sc-message-types" }
+thiserror = { workspace = true }
+
+[dev-dependencies]
+tempfile = { workspace = true }
+

@@ -1,0 +1,10 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" width="64" height="64" role="img" aria-label="SC Node">
+  <style>
+    .ink{fill:#0F172A}.ink-s{stroke:#0F172A}.acc{fill:#1B8DEB}.acc-s{stroke:#1B8DEB}
+    @media (prefers-color-scheme: dark){.ink{fill:#E6EDF3}.ink-s{stroke:#E6EDF3}.acc{fill:#47ADFF}.acc-s{stroke:#47ADFF}}
+  </style>
+  <path class="ink-s" d="M41.9 8 L56 22.1 V41.9 L41.9 56 H22.1 L8 41.9 V22.1 L22.1 8 Z" fill="none" stroke-width="5" stroke-linejoin="round"/>
+  <line x1="32" y1="32" x2="50" y2="32" class="acc-s" stroke-width="6" stroke-linecap="round"/>
+  <circle class="ink" cx="32" cy="32" r="9"/>
+  <circle cx="32" cy="32" r="4" class="acc"/>
+</svg>

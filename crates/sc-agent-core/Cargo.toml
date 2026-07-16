@@ -1,0 +1,33 @@
+﻿[package]
+name = "sc-agent-core"
+version = { workspace = true }
+edition = "2024"
+license = { workspace = true }
+repository = { workspace = true }
+description = "Core agent loop and REPL for SC Node"
+categories = { workspace = true }
+keywords = { workspace = true }
+
+[dependencies]
+futures = { workspace = true }
+anyhow = { workspace = true }
+clap = { workspace = true }
+tokio = { workspace = true }
+tracing = { workspace = true }
+tracing-subscriber = { workspace = true }
+serde_json = { workspace = true }
+sc-config = { path = "../sc-config" }
+sc-provider-core = { path = "../sc-provider-core" }
+sc-provider-openrouter = { path = "../sc-provider-openrouter" }
+sc-provider-nvidia = { path = "../sc-provider-nvidia" }
+sc-provider-ollama = { path = "../sc-provider-ollama" }
+sc-tool-core = { path = "../sc-tool-core" }
+sc-tool-file = { path = "../sc-tool-file" }
+sc-tool-shell = { path = "../sc-tool-shell" }
+sc-message-types = { path = "../sc-message-types" }
+sc-sandbox = { path = "../sc-sandbox" }
+sc-audit = { path = "../sc-audit" }
+
+[dev-dependencies]
+tempfile = "3"
+async-trait = { workspace = true }

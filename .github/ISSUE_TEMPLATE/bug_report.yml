@@ -1,0 +1,86 @@
+name: Bug Report
+description: Report something in SC Node that doesn't work as documented.
+title: "[Bug]: "
+labels: ["bug"]
+body:
+  - type: input
+    id: version
+    attributes:
+      label: SC Node version / commit
+      description: Output of `sc-agent --version`, or the commit hash you built from.
+      placeholder: "0.1.0 / abc1234"
+    validations:
+      required: true
+
+  - type: dropdown
+    id: os
+    attributes:
+      label: Operating System
+      description: Windows is the only platform verified in this repository today.
+      options:
+        - Windows
+        - Linux
+        - macOS
+      default: 0
+    validations:
+      required: true
+
+  - type: dropdown
+    id: provider
+    attributes:
+      label: Provider
+      options:
+        - Ollama
+        - NVIDIA NIM
+        - OpenRouter
+        - Other / not provider-related
+    validations:
+      required: true
+
+  - type: textarea
+    id: config
+    attributes:
+      label: Relevant config
+      description: >
+        Paste the relevant parts of `~/.sc-agent/config.toml`.
+        NEVER paste API keys, tokens, or other secrets — redact them first
+        (e.g. replace a key's value with `<redacted>`). API keys are only
+        ever set via environment variables and should never appear in your
+        config file in the first place.
+      render: toml
+
+  - type: textarea
+    id: repro
+    attributes:
+      label: Steps to reproduce
+      description: Exact commands run, in order.
+      placeholder: |
+        1. sc-agent init
+        2. sc-agent run "..."
+    validations:
+      required: true
+
+  - type: textarea
+    id: expected
+    attributes:
+      label: Expected behavior
+    validations:
+      required: true
+
+  - type: textarea
+    id: actual
+    attributes:
+      label: Actual behavior
+    validations:
+      required: true
+
+  - type: textarea
+    id: logs
+    attributes:
+      label: Logs / output
+      description: >
+        Paste relevant terminal output or audit-log lines
+        (`sc-agent audit-show --last 10`). Review before pasting: redact
+        any file paths, usernames, or secrets you don't want to share
+        publicly.
+      render: shell

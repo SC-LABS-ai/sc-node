@@ -1,0 +1,17 @@
+[package]
+name = "sc-proof"
+version = { workspace = true }
+edition = "2024"
+license = { workspace = true }
+repository = { workspace = true }
+description = "Verifiable execution proof bundles for SC Node"
+categories = { workspace = true }
+keywords = { workspace = true }
+
+[dependencies]
+serde = { workspace = true }
+serde_json = { workspace = true }
+sha2 = { workspace = true }
+hex = { workspace = true }
+chrono = { workspace = true }
+thiserror = { workspace = true }

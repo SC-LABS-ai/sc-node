@@ -1,0 +1,5 @@
+blank_issues_enabled: true
+contact_links:
+  - name: SC LABS
+    url: https://sclabs.uk
+    about: General questions and contact outside of a specific bug or feature request.

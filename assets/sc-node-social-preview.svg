@@ -1,0 +1,36 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1280 640" width="1280" height="640" role="img" aria-label="SC Node — experimental Rust agent harness">
+  <rect width="1280" height="640" fill="#0D1420"/>
+  <!-- faint oversized octagon, background depth -->
+  <path d="M1148 80 L1288 220 V418 L1148 558 H950 L810 418 V220 L950 80 Z" fill="none" stroke="#1E293B" stroke-width="10" stroke-linejoin="round" opacity="0.6"/>
+  <!-- mark, scaled 3x at (120,128) -->
+  <g transform="translate(120 128) scale(3)">
+    <path d="M41.9 8 L56 22.1 V41.9 L41.9 56 H22.1 L8 41.9 V22.1 L22.1 8 Z" fill="none" stroke="#E6EDF3" stroke-width="3.5" stroke-linejoin="round"/>
+    <g stroke="#E6EDF3" stroke-width="2.5" opacity="0.45">
+      <line x1="32" y1="32" x2="32" y2="12"/>
+      <line x1="32" y1="32" x2="12" y2="32"/>
+      <line x1="32" y1="32" x2="32" y2="52"/>
+    </g>
+    <g fill="#E6EDF3" opacity="0.45">
+      <circle cx="32" cy="12" r="3"/>
+      <circle cx="12" cy="32" r="3"/>
+      <circle cx="32" cy="52" r="3"/>
+    </g>
+    <line x1="32" y1="32" x2="52" y2="32" stroke="#47ADFF" stroke-width="4" stroke-linecap="round"/>
+    <circle cx="52" cy="32" r="4" fill="#47ADFF"/>
+    <circle cx="32" cy="32" r="7" fill="#E6EDF3"/>
+    <circle cx="32" cy="32" r="3" fill="#47ADFF"/>
+  </g>
+  <!-- title -->
+  <text x="360" y="248" font-family="'Segoe UI', system-ui, -apple-system, 'Helvetica Neue', Arial, sans-serif" font-size="92" font-weight="800" fill="#E6EDF3">SC <tspan fill="#47ADFF">NODE</tspan></text>
+  <!-- tagline -->
+  <text x="364" y="304" font-family="'Segoe UI', system-ui, -apple-system, 'Helvetica Neue', Arial, sans-serif" font-size="28" font-weight="700" letter-spacing="6" fill="#47ADFF">CONNECT. ROUTE. EXECUTE.</text>
+  <!-- subtitle -->
+  <text x="364" y="356" font-family="'Segoe UI', system-ui, -apple-system, 'Helvetica Neue', Arial, sans-serif" font-size="32" font-weight="400" fill="#94A3B8">Experimental, provider-neutral Rust agent harness</text>
+  <text x="364" y="400" font-family="'Segoe UI', system-ui, -apple-system, 'Helvetica Neue', Arial, sans-serif" font-size="32" font-weight="400" fill="#94A3B8">for tool-using AI agents — local and cloud models</text>
+  <!-- alpha badge -->
+  <rect x="364" y="432" rx="8" width="216" height="44" fill="none" stroke="#47ADFF" stroke-width="2"/>
+  <text x="472" y="462" text-anchor="middle" font-family="'Segoe UI', system-ui, -apple-system, 'Helvetica Neue', Arial, sans-serif" font-size="22" font-weight="700" letter-spacing="3" fill="#47ADFF">PUBLIC ALPHA</text>
+  <!-- footer -->
+  <text x="120" y="576" font-family="'Cascadia Code', Consolas, 'Courier New', monospace" font-size="26" fill="#64748B">github.com/SC-LABS-ai/sc-node</text>
+  <text x="1160" y="576" text-anchor="end" font-family="'Cascadia Code', Consolas, 'Courier New', monospace" font-size="26" fill="#64748B">sclabs.uk</text>
+</svg>

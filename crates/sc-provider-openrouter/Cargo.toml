@@ -1,0 +1,16 @@
+[package]
+name = "sc-provider-openrouter"
+version = { workspace = true }
+edition = "2024"
+license = { workspace = true }
+repository = { workspace = true }
+description = "OpenRouter provider for SC Node"
+categories = { workspace = true }
+keywords = { workspace = true }
+
+[dependencies]
+tokio = { workspace = true }
+async-trait = { workspace = true }
+sc-provider-core = { path = "../sc-provider-core" }
+sc-config = { path = "../sc-config" }
+sc-message-types = { path = "../sc-message-types" }

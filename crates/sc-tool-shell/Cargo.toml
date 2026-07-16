@@ -1,0 +1,22 @@
+[package]
+name = "sc-tool-shell"
+version = { workspace = true }
+edition = "2024"
+license = { workspace = true }
+repository = { workspace = true }
+description = "Shell execution tool for SC Node"
+categories = { workspace = true }
+keywords = { workspace = true }
+
+[dependencies]
+anyhow = { workspace = true }
+async-trait = { workspace = true }
+serde = { workspace = true }
+serde_json = { workspace = true }
+tokio = { workspace = true }
+shell-escape = { workspace = true }
+sc-tool-core = { path = "../sc-tool-core" }
+sc-message-types = { path = "../sc-message-types" }
+sc-config = { path = "../sc-config" }
+sc-sandbox = { path = "../sc-sandbox" }
+sc-audit = { path = "../sc-audit" }

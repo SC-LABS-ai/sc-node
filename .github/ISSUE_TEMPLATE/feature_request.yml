@@ -1,0 +1,37 @@
+name: Feature Request
+description: Propose a change or addition to the SC Node harness itself.
+title: "[Feature]: "
+labels: ["enhancement"]
+body:
+  - type: textarea
+    id: problem
+    attributes:
+      label: Problem
+      description: What can't you do today, or what's awkward/unsafe about the current behavior?
+    validations:
+      required: true
+
+  - type: textarea
+    id: solution
+    attributes:
+      label: Proposed solution
+      description: What would you like SC Node to do instead?
+    validations:
+      required: true
+
+  - type: textarea
+    id: alternatives
+    attributes:
+      label: Alternatives considered
+      description: Other approaches you considered, and why you didn't propose them instead.
+
+  - type: checkboxes
+    id: scope
+    attributes:
+      label: Scope check
+      options:
+        - label: >
+            This is about the SC Node harness itself (CLI, providers, tools,
+            sandbox, config, audit) — not a separate app or UI built on top
+            of it.
+          required: true

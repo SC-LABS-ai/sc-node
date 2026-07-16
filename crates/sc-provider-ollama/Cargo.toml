@@ -1,0 +1,23 @@
+[package]
+name = "sc-provider-ollama"
+version = { workspace = true }
+edition = "2024"
+license = { workspace = true }
+repository = { workspace = true }
+description = "Ollama local provider for SC Node"
+categories = { workspace = true }
+keywords = { workspace = true }
+
+[dependencies]
+anyhow = { workspace = true }
+reqwest = { workspace = true }
+serde = { workspace = true }
+serde_json = { workspace = true }
+tokio = { workspace = true }
+tokio-util = { workspace = true }
+tracing = { workspace = true }
+async-trait = { workspace = true }
+futures = { workspace = true }
+sc-provider-core = { path = "../sc-provider-core" }
+sc-config = { path = "../sc-config" }
+sc-message-types = { path = "../sc-message-types" }
