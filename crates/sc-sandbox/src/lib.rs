@@ -423,17 +423,27 @@ mod tests {
     use sc_config::WorkspaceConfig;
     use tempfile::tempdir;
 
+    /// The checker resolves candidate paths to their real on-disk location
+    /// (expanding 8.3 short names and resolving junctions — both common in
+    /// CI runner temp dirs), so tests that expect a MATCH must build their
+    /// workspace patterns from the same real, normalized form. Tests that
+    /// expect a denial don't need this: mismatches only ever fail closed.
+    fn real_path(path: &Path) -> PathBuf {
+        let canon = path.canonicalize().expect("canonicalize test path");
+        normalize_path(&canon).expect("normalize test path")
+    }
+
     #[test]
     fn test_is_path_allowed_allowed() {
         let dir = tempdir().unwrap();
-        let path = dir.path();
+        let path = real_path(dir.path());
 
         let config = WorkspaceConfig {
             allow: vec![path.to_string_lossy().to_string()],
             deny: vec![],
         };
 
-        assert!(is_path_allowed(path, &config));
+        assert!(is_path_allowed(&path, &config));
     }
 
     #[test]
@@ -483,7 +493,7 @@ mod tests {
     #[test]
     fn test_is_path_allowed_subdirectory() {
         let dir = tempdir().unwrap();
-        let root = dir.path();
+        let root = real_path(dir.path());
         let subdir = root.join("subdir");
         std::fs::create_dir_all(&subdir).unwrap();
 
@@ -498,21 +508,21 @@ mod tests {
     #[test]
     fn test_resolve_and_check_path_absolute() {
         let dir = tempdir().unwrap();
-        let path = dir.path();
+        let path = real_path(dir.path());
 
         let config = WorkspaceConfig {
             allow: vec![path.to_string_lossy().to_string()],
             deny: vec![],
         };
 
-        let result = resolve_and_check_path(path, path, &config);
+        let result = resolve_and_check_path(&path, &path, &config);
         assert!(result.is_ok());
     }
 
     #[test]
     fn test_resolve_and_check_path_relative() {
         let dir = tempdir().unwrap();
-        let path = dir.path();
+        let path = real_path(dir.path());
         std::fs::create_dir_all(path.join("subdir")).unwrap();
 
         let config = WorkspaceConfig {
@@ -520,7 +530,7 @@ mod tests {
             deny: vec![],
         };
 
-        let result = resolve_and_check_path(Path::new("subdir"), path, &config);
+        let result = resolve_and_check_path(Path::new("subdir"), &path, &config);
         assert!(result.is_ok());
         assert_eq!(result.unwrap(), path.join("subdir"));
     }
