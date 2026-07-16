@@ -1,6 +1,6 @@
 <div align="center">
 
-<picture><source media="(prefers-color-scheme: dark)" srcset="assets/sc-node-logo-dark.svg"><img src="assets/sc-node-logo-light.svg" alt="SC Node" width="360"></picture>
+<img src="assets/brand/sc-node-badge-640.png" alt="SC Node — Connect. Route. Execute." width="380">
 
 **SC Node is an experimental, provider-neutral Rust agent harness for executing tool-using AI agents across local and cloud models.**
 

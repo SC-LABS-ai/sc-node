@@ -1,0 +1,108 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" width="1600" height="420" viewBox="0 0 1600 420" role="img" aria-labelledby="title desc">
+  <title id="title">SC NODE horizontal logo</title>
+  <desc id="desc">SC NODE horizontal lockup with icon and claim.</desc>
+  <defs>
+    <linearGradient id="scnodehorizontal-metal" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#394656"/>
+      <stop offset="0.16" stop-color="#F4F8FB"/>
+      <stop offset="0.34" stop-color="#687686"/>
+      <stop offset="0.52" stop-color="#DCE4EB"/>
+      <stop offset="0.72" stop-color="#4C5967"/>
+      <stop offset="0.88" stop-color="#EDF2F6"/>
+      <stop offset="1" stop-color="#2C3743"/>
+    </linearGradient>
+    <linearGradient id="scnodehorizontal-word" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#182536"/>
+      <stop offset="0.28" stop-color="#657281"/>
+      <stop offset="0.52" stop-color="#0A1524"/>
+      <stop offset="0.78" stop-color="#4E5C6B"/>
+      <stop offset="1" stop-color="#111C2B"/>
+    </linearGradient>
+    <radialGradient id="scnodehorizontal-core" cx="50%" cy="44%" r="62%">
+      <stop offset="0" stop-color="#0C2740"/>
+      <stop offset="0.55" stop-color="#04121F"/>
+      <stop offset="1" stop-color="#01060D"/>
+    </radialGradient>
+    <radialGradient id="scnodehorizontal-bolt" cx="35%" cy="28%" r="70%">
+      <stop offset="0" stop-color="#FFFFFF"/>
+      <stop offset="0.22" stop-color="#ABB7C2"/>
+      <stop offset="0.52" stop-color="#3C4854"/>
+      <stop offset="1" stop-color="#0D131A"/>
+    </radialGradient>
+    <linearGradient id="scnodehorizontal-accent" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#25C7FF"/>
+      <stop offset="0.55" stop-color="#25C7FF"/>
+      <stop offset="1" stop-color="#25C7FF"/>
+    </linearGradient>
+    <filter id="scnodehorizontal-shadow" x="-30%" y="-30%" width="160%" height="160%">
+      <feDropShadow dx="0" dy="7" stdDeviation="8" flood-color="#52677A" flood-opacity="0.72"/>
+    </filter>
+    <filter id="scnodehorizontal-glow" x="-80%" y="-80%" width="260%" height="260%">
+      <feGaussianBlur stdDeviation="3.2" result="blur"/>
+      <feMerge><feMergeNode in="blur"/><feMergeNode in="SourceGraphic"/></feMerge>
+    </filter>
+  </defs>
+  <g transform="translate(36 48) scale(1.26)"><g>
+    <polygon points="78,8 178,8 248,78 248,178 178,248 78,248 8,178 8,78"
+      fill="url(#scnodehorizontal-metal)" stroke="#DCE5EC" stroke-width="2" filter="url(#scnodehorizontal-shadow)"/>
+    <polygon points="83,27 173,27 229,83 229,173 173,229 83,229 27,173 27,83"
+      fill="url(#scnodehorizontal-core)" stroke="#101D2A" stroke-width="5"/>
+    <polygon points="88,38 168,38 218,88 218,168 168,218 88,218 38,168 38,88"
+      fill="none" stroke="#25C7FF" stroke-width="2" opacity="0.72"/>
+    <g transform="translate(128 25)">
+    <circle r="7.6" fill="url(#scnodehorizontal-bolt)" stroke="#08111A" stroke-width="1.5"/>
+    <path d="M-3.2 -3.2 L3.2 3.2 M3.2 -3.2 L-3.2 3.2" fill="none" stroke="#0B1219" stroke-width="1.8" stroke-linecap="round"/>
+  </g><g transform="translate(201 55)">
+    <circle r="7.6" fill="url(#scnodehorizontal-bolt)" stroke="#08111A" stroke-width="1.5"/>
+    <path d="M-3.2 -3.2 L3.2 3.2 M3.2 -3.2 L-3.2 3.2" fill="none" stroke="#0B1219" stroke-width="1.8" stroke-linecap="round"/>
+  </g><g transform="translate(231 128)">
+    <circle r="7.6" fill="url(#scnodehorizontal-bolt)" stroke="#08111A" stroke-width="1.5"/>
+    <path d="M-3.2 -3.2 L3.2 3.2 M3.2 -3.2 L-3.2 3.2" fill="none" stroke="#0B1219" stroke-width="1.8" stroke-linecap="round"/>
+  </g><g transform="translate(201 201)">
+    <circle r="7.6" fill="url(#scnodehorizontal-bolt)" stroke="#08111A" stroke-width="1.5"/>
+    <path d="M-3.2 -3.2 L3.2 3.2 M3.2 -3.2 L-3.2 3.2" fill="none" stroke="#0B1219" stroke-width="1.8" stroke-linecap="round"/>
+  </g><g transform="translate(128 231)">
+    <circle r="7.6" fill="url(#scnodehorizontal-bolt)" stroke="#08111A" stroke-width="1.5"/>
+    <path d="M-3.2 -3.2 L3.2 3.2 M3.2 -3.2 L-3.2 3.2" fill="none" stroke="#0B1219" stroke-width="1.8" stroke-linecap="round"/>
+  </g><g transform="translate(55 201)">
+    <circle r="7.6" fill="url(#scnodehorizontal-bolt)" stroke="#08111A" stroke-width="1.5"/>
+    <path d="M-3.2 -3.2 L3.2 3.2 M3.2 -3.2 L-3.2 3.2" fill="none" stroke="#0B1219" stroke-width="1.8" stroke-linecap="round"/>
+  </g><g transform="translate(25 128)">
+    <circle r="7.6" fill="url(#scnodehorizontal-bolt)" stroke="#08111A" stroke-width="1.5"/>
+    <path d="M-3.2 -3.2 L3.2 3.2 M3.2 -3.2 L-3.2 3.2" fill="none" stroke="#0B1219" stroke-width="1.8" stroke-linecap="round"/>
+  </g><g transform="translate(55 55)">
+    <circle r="7.6" fill="url(#scnodehorizontal-bolt)" stroke="#08111A" stroke-width="1.5"/>
+    <path d="M-3.2 -3.2 L3.2 3.2 M3.2 -3.2 L-3.2 3.2" fill="none" stroke="#0B1219" stroke-width="1.8" stroke-linecap="round"/>
+  </g>
+    
+    <g fill="none" stroke="#17688D" stroke-width="1.25" opacity="0.58">
+      <circle cx="128" cy="128" r="36"/><circle cx="128" cy="128" r="58"/><circle cx="128" cy="128" r="78"/>
+      <path d="M45 128 H211 M128 45 V211 M69 69 L187 187 M187 69 L69 187"/>
+    </g>
+    <path d="M128 128 L128 48 A80 80 0 0 1 185 72 Z" fill="#25C7FF" opacity="0.10"/>
+    <path d="M128 128 L184 72" stroke="#25C7FF" stroke-width="2" opacity="0.78"/>
+    <circle cx="128" cy="128" r="83" fill="none" stroke="#25C7FF" stroke-width="2" opacity="0.48"/>
+  
+    <g filter="url(#scnodehorizontal-glow)">
+      <g>
+        <path d="M128 95 L158 112 V146 L128 163 L98 146 V112 Z" fill="none" stroke="#0A1625" stroke-width="6" stroke-linecap="round" stroke-linejoin="round"/>
+        <path d="M98 112 L128 129 L158 112 M128 129 V163" fill="none" stroke="#25C7FF" stroke-width="5" stroke-linecap="round" stroke-linejoin="round"/>
+        <g fill="none" stroke="#25C7FF" stroke-width="6" stroke-linecap="round" stroke-linejoin="round" style="stroke-width:4">
+          <path d="M98 112 L73 98 M158 112 L183 98 M98 146 L73 160 M158 146 L183 160 M128 95 V70 M128 163 V188"/>
+        </g>
+        <g fill="#25C7FF" stroke="#0A1625" stroke-width="2">
+          <circle cx="73" cy="98" r="7"/><circle cx="183" cy="98" r="7"/><circle cx="73" cy="160" r="7"/><circle cx="183" cy="160" r="7"/><circle cx="128" cy="70" r="7"/><circle cx="128" cy="188" r="7"/>
+        </g>
+      </g>
+    </g>
+  </g></g>
+      <g>
+    <text x="400" y="190" text-anchor="start" font-family="Bahnschrift, &apos;Segoe UI&apos;, Arial, sans-serif" font-size="132.0" font-weight="800" font-stretch="condensed" letter-spacing="2.8" fill="url(#scnodehorizontal-word)" stroke="#02070D" stroke-width="1.1" paint-order="stroke" style="filter:drop-shadow(0 4px 5px #52677A)">SC NODE</text>
+    <text x="400" y="248" text-anchor="start" font-family="Bahnschrift, &apos;Segoe UI&apos;, Arial, sans-serif" font-size="30.0" font-weight="600" letter-spacing="4.4" fill="#25C7FF">CONNECT. ROUTE. EXECUTE.</text>
+    <g fill="none" stroke="#25C7FF" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" opacity="0.9">
+    <path d="M400 282 H655.1 L669.1 269 L681.1 295 L695.1 257 L709.1 302 L723.1 272 L739.1 282 H1010.2"/>
+    <circle cx="400" cy="282" r="4" fill="#25C7FF" stroke="none"/><circle cx="1010.2" cy="282" r="4" fill="#25C7FF" stroke="none"/>
+  </g>
+  </g>
+</svg>

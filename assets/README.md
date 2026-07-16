@@ -35,3 +35,15 @@ monochrome.
   convert text to paths before external use.
 - PNG exports are optional; regenerate from the SVG sources at 512 px (mark) and
   1280×640 (social preview) when raster tooling is available.
+
+## Official brand assets (`brand/`)
+
+The `brand/` directory contains the official SC Node identity from the SC LABS
+brand system: the metallic badge (`sc-node-badge-640.png`, README hero), the
+GitHub social preview (`social-preview-1200x630.png`), horizontal lockups
+(SVG, dark/light), and the primary icon. The flat SVGs in this directory are
+simplified developer-docs variants of the same geometry.
+
+**Trademark note:** the SC Node and SC LABS names, logos, and brand assets are
+© SC LABS and are not covered by the repository's MIT/Apache-2.0 code license.
+You may not use them to imply affiliation or endorsement.
