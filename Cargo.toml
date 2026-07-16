@@ -1,4 +1,4 @@
-﻿[package]
+[package]
 name = "sc-agent"
 version = "0.1.0"
 edition = "2024"
@@ -62,7 +62,7 @@ sha2 = "0.10"
 hex = "0.4"
 regex = "1"
 shell-escape = "0.1"
-shellexpand = "2"
+shellexpand = "3"
 tempfile = "3"
 
 [dependencies]
