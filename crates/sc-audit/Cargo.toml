@@ -1,4 +1,4 @@
-﻿[package]
+[package]
 name = "sc-audit"
 version = { workspace = true }
 edition = "2024"
