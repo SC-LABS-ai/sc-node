@@ -1,6 +1,6 @@
 # SC Node — Status
 
-> **As of:** 2026-07-16 · **Version:** 0.1.0 · **Maturity:** experimental public alpha
+> **As of:** 2026-08-04 · **Version:** 0.1.0-alpha.2 · **Maturity:** experimental public alpha
 
 This is the authoritative status page for SC Node. It is written from direct
 code inspection, not from prior doc claims; where an older document disagrees
