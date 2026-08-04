@@ -1,4 +1,4 @@
-﻿[package]
+[package]
 name = "sc-tool-core"
 version = { workspace = true }
 edition = { workspace = true }
