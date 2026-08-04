@@ -300,8 +300,6 @@ yet proven** and **no benchmark numbers are published**. See
 - No per-process resource limits (CPU/memory/pids); no Windows Job Object or
   Linux cgroup containment.
 - The audit log is append-only, not cryptographically tamper-evident.
-- A relative `audit.path` currently resolves against the process working
-  directory rather than `data_dir`; use an absolute path if that matters to you.
 - The sandbox has a check-then-open (TOCTOU) window.
 - `sc-memory` is present but not wired into the runtime.
 - Ollama streaming is batch-collect; cloud (OpenAI-compatible) streaming is
