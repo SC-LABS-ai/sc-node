@@ -1,11 +1,12 @@
 # SC Node — Dependency Inventory & SBOM Generation
 
-> **Update note (2026-07-16):** this inventory is a point-in-time snapshot that
-> predates the `sc-contract`, `sc-proof`, and `sc-memory` crates. The workspace
-> now has **one binary crate (`sc-agent`) plus 15 library crates**, and `sha2`,
-> `hex`, and `chrono` are now actually consumed (by `sc-proof`/`sc-contract`).
-> The package counts and the "declared but not resolved" table below reflect the
-> earlier snapshot; regenerate per §4 before any release that needs exact counts.
+> **Update note (2026-08-04):** the detailed package table below remains the
+> historical July snapshot and must be regenerated per §4 before the next
+> release. The current workspace has **one binary crate (`sc-agent`) plus 15
+> library crates**. Its refreshed direct pins include `reqwest 0.13`, `toml 1.1`,
+> `dirs 6`, `sha2 0.11`, and `shellexpand 3`; `sha2`, `hex`, and `chrono` are
+> consumed by `sc-proof`/`sc-contract`. Do not use the older resolved-version
+> rows below as the source of truth for the refreshed branch.
 
 This document is derived mechanically from `Cargo.lock` via `cargo metadata`
 — it is not hand-typed and not guessed. It is a point-in-time snapshot; see
