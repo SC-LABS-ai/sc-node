@@ -1,4 +1,4 @@
-﻿[package]
+[package]
 name = "sc-provider-core"
 version = { workspace = true }
 edition = "2024"
