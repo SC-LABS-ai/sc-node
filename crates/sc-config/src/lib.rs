@@ -452,6 +452,17 @@ impl Config {
         }
     }
 
+    /// Return an audit configuration with its path resolved for runtime use.
+    ///
+    /// Keeping the stored configuration unchanged preserves the user-facing
+    /// TOML, while ensuring the audit logger never interprets a relative path
+    /// against the process working directory.
+    pub fn resolved_audit_config(&self) -> AuditConfig {
+        let mut audit = self.audit.clone();
+        audit.path = self.audit_path().to_string_lossy().into_owned();
+        audit
+    }
+
     /// Apply environment variable overrides.
     fn apply_env_overrides(&mut self) {
         // General
@@ -589,5 +600,29 @@ mod tests {
         config.workspace.allow = vec!["~/projects".into(), "${HOME}/work".into()];
         let data_dir = config.data_dir();
         assert!(data_dir.to_string_lossy().contains(".sc-agent"));
+    }
+
+    #[test]
+    fn test_relative_audit_path_resolves_against_data_dir() {
+        let dir = tempdir().unwrap();
+        let mut config = Config::default();
+        config.general.data_dir = dir.path().to_string_lossy().into_owned();
+        config.audit.path = "logs/audit.jsonl".into();
+
+        let expected = dir.path().join("logs").join("audit.jsonl");
+        assert_eq!(config.audit_path(), expected);
+        assert_eq!(PathBuf::from(config.resolved_audit_config().path), expected);
+        assert_eq!(config.audit.path, "logs/audit.jsonl");
+    }
+
+    #[test]
+    fn test_absolute_audit_path_is_preserved() {
+        let dir = tempdir().unwrap();
+        let absolute = dir.path().join("absolute-audit.jsonl");
+        let mut config = Config::default();
+        config.audit.path = absolute.to_string_lossy().into_owned();
+
+        assert_eq!(config.audit_path(), absolute);
+        assert_eq!(PathBuf::from(config.resolved_audit_config().path), absolute);
     }
 }
