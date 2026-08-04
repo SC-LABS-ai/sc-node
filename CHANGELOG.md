@@ -9,6 +9,51 @@ API is unstable during the alpha).
 > development history is archived internally and is intentionally not part of the
 > public git history.
 
+## [0.1.0-alpha.2] — 2026-08-04
+
+Second public alpha focused on maintenance, release hygiene, and a more coherent
+public identity. Runtime behavior remains intentionally conservative and the API
+is still unstable.
+
+### Added
+
+- **Official SC Node identity.** Added the SC LABS-aligned icon, horizontal
+  lockups, badge, social preview, and brand usage notes under `assets/`.
+- **Audit path regression coverage.** Added tests proving that relative audit-log
+  paths resolve against `general.data_dir` while absolute paths remain unchanged.
+
+### Changed
+
+- **Dependency refresh.** Updated `reqwest` to 0.13, `toml` to 1.1, `dirs` to 6,
+  `sha2` to 0.11, and `shellexpand` to 3. The `reqwest` TLS feature selection was
+  migrated to the 0.13 `rustls` feature set.
+- **CI maintenance.** Updated `actions/checkout` to the supported v6 line and
+  removed UTF-8 byte-order marks from Cargo manifests so GitHub Actions and
+  dependency tooling parse the workspace consistently.
+- **Dependency documentation.** Updated the direct-dependency snapshot and
+  retained an explicit warning that the full inventory must be regenerated for a
+  formal release-grade SBOM.
+
+### Fixed
+
+- **Relative audit-log path resolution.** Runtime startup now uses
+  `Config::audit_path()` instead of passing the raw configured value directly to
+  the audit logger. A relative `audit.path` therefore resolves under
+  `general.data_dir` rather than the process working directory.
+
+### Known limitations
+
+The project remains an experimental Windows-verified alpha. Linux and macOS are
+unverified; OpenRouter is implemented but not live-tested; `sc-memory` is not yet
+wired into the runtime; shell arguments are not workspace-bounded; no per-process
+resource limits are enforced; and `cargo audit`/`cargo deny` are not yet CI gates.
+The Alpha 2 release audit found no known vulnerability, but RustSec reports the
+unmaintained `paste` crate transitively through the optional
+`turbovec` feature (`turbovec` → `faer`/`statrs` → `paste`).
+See [docs/STATUS.md](docs/STATUS.md),
+[docs/SECURITY_MODEL.md](docs/SECURITY_MODEL.md), and
+[THREAT_MODEL.md](THREAT_MODEL.md).
+
 ## [0.1.0-alpha.1] — 2026-07-16
 
 First public alpha of SC Node — an experimental, provider-neutral Rust agent
