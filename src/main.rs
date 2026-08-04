@@ -52,8 +52,10 @@ async fn main() -> anyhow::Result<()> {
         Err(e) => return Err(e.into()),
     };
 
-    // Audit logger
-    let audit = AuditLogger::new(config.audit.clone())
+    // Audit logger. Resolve relative paths against general.data_dir before
+    // passing the configuration to the logger; otherwise the process working
+    // directory would silently decide where the audit file is written.
+    let audit = AuditLogger::new(config.resolved_audit_config())
         .await
         .ok()
         .map(Arc::new);
