@@ -1,5 +1,7 @@
 //! Core provider traits and OpenAI-compatible helper types for SC Node.
 
+#![deny(rustdoc::broken_intra_doc_links, rustdoc::private_intra_doc_links)]
+
 pub mod openai_compat;
 pub mod routing;
 pub mod sse;

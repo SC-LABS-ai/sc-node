@@ -3,6 +3,8 @@
 //! This crate defines the core data structures used for communication between
 //! the agent, providers, and tools.
 
+#![deny(rustdoc::broken_intra_doc_links, rustdoc::private_intra_doc_links)]
+
 use chrono::{DateTime, Utc};
 use serde::{Deserialize, Serialize};
 use uuid::Uuid;

@@ -18,7 +18,7 @@
 //! buffering it whole.
 //!
 //! Retry policy: 401/403/429 are never retried (retrying with the same
-//! credentials/rate limit would not help - see [`RoutingError`]-style
+//! credentials/rate limit would not help - see [`crate::routing::RoutingError`]-style
 //! "stop, don't silently paper over it" philosophy). 5xx responses and
 //! network-level timeouts/connect failures are retried up to
 //! `max_retries` bounded attempts; once that bound is reached the call

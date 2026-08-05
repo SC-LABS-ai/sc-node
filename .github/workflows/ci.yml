@@ -32,6 +32,10 @@ jobs:
       - name: Test (workspace)
         run: cargo test --workspace --locked
 
+      - name: Public API compatibility and package gate
+        shell: pwsh
+        run: ./scripts/verify-public-api.ps1
+
       - name: Build (release)
         run: cargo build --release --locked
 
@@ -59,6 +63,10 @@ jobs:
 
       - name: Test (workspace)
         run: cargo test --workspace --locked
+
+      - name: Public API compatibility and package gate
+        shell: pwsh
+        run: ./scripts/verify-public-api.ps1
 
       - name: Build (release)
         run: cargo build --release --locked

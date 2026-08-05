@@ -4,6 +4,10 @@ version = { workspace = true }
 edition = "2024"
 license = { workspace = true }
 repository = { workspace = true }
+homepage = { workspace = true }
+rust-version = { workspace = true }
+documentation = "https://docs.rs/sc-contract"
+readme = "README.md"
 description = "Versioned execution contracts and preflight checks for SC Node"
 categories = { workspace = true }
 keywords = { workspace = true }
