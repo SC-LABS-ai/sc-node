@@ -1,98 +1,124 @@
-﻿# SC Node Smoke Check
-# Safe local health check. No API keys required. No Ollama required.
-# Verifies: cargo check, cargo test, --help, --version, init (isolated).
+# SC Node smoke check
+# Cross-platform local health check. No API keys or live model provider required.
+# Verifies: cargo check, cargo test, --help, --version, and isolated config init.
 
 $ErrorActionPreference = "Stop"
 
-Push-Location (Join-Path $PSScriptRoot "..")
+$repoRoot = [System.IO.Path]::GetFullPath((Join-Path $PSScriptRoot ".."))
+$tempRoot = Join-Path ([System.IO.Path]::GetTempPath()) ("sc-node-smoke-" + [guid]::NewGuid().ToString("N"))
+New-Item -ItemType Directory -Force -Path $tempRoot | Out-Null
 
-function Invoke-CmdStep {
-    param([string]$Name, [string]$Command, [string]$OutputFile)
+function Invoke-NativeStep {
+    param(
+        [Parameter(Mandatory = $true)][string]$Name,
+        [Parameter(Mandatory = $true)][string]$Executable,
+        [Parameter(Mandatory = $true)][string[]]$Arguments,
+        [Parameter(Mandatory = $true)][string]$OutputFile
+    )
 
     Write-Host ""
     Write-Host $Name -ForegroundColor Yellow
 
-    Remove-Item $OutputFile -Force -ErrorAction SilentlyContinue
+    if (Test-Path $OutputFile) {
+        Remove-Item $OutputFile -Force
+    }
 
-    cmd /c "$Command > `"$OutputFile`" 2>&1"
-    $exitCode = $LASTEXITCODE
-
-    $output = ""
-    if (Test-Path $OutputFile) { $output = Get-Content $OutputFile -Raw }
+    $previousErrorActionPreference = $ErrorActionPreference
+    try {
+        # Windows PowerShell 5.1 wraps native stderr as NativeCommandError when
+        # ErrorActionPreference is Stop, even when the process exits successfully.
+        # Capture the process streams first and decide solely from its exit code.
+        $ErrorActionPreference = "Continue"
+        & $Executable @Arguments *> $OutputFile
+        $exitCode = $LASTEXITCODE
+    }
+    finally {
+        $ErrorActionPreference = $previousErrorActionPreference
+    }
+    $output = if (Test-Path $OutputFile) { Get-Content $OutputFile -Raw } else { "" }
 
     if ($exitCode -ne 0) {
         Write-Host "FAIL: $Name (exit $exitCode)" -ForegroundColor Red
         Write-Host $output
-        exit $exitCode
+        throw "$Name failed with exit code $exitCode"
     }
 
     if ($output -match "warning:") {
         Write-Host "WARN: $Name completed with warnings" -ForegroundColor Yellow
-        $output -split "`r?`n" | Select-String "warning:" | Select-Object -First 10 | ForEach-Object { Write-Host $_ }
+        $output -split "`r?`n" |
+            Select-String "warning:" |
+            Select-Object -First 10 |
+            ForEach-Object { Write-Host $_ }
     } else {
         Write-Host "PASS: $Name" -ForegroundColor Green
     }
+
     return $output
 }
 
+Push-Location $repoRoot
 try {
     Write-Host ""
     Write-Host "==================================================" -ForegroundColor Cyan
     Write-Host " SC NODE SMOKE CHECK" -ForegroundColor Cyan
     Write-Host "==================================================" -ForegroundColor Cyan
 
-    # ── Build & Test ─────────────────────────────────────────
-    Invoke-CmdStep "[1/5] cargo check" "cargo check" ".smoke-check.txt" | Out-Null
-    Invoke-CmdStep "[2/5] cargo test --workspace" "cargo test --workspace" ".smoke-test.txt" | Out-Null
+    Invoke-NativeStep `
+        -Name "[1/5] cargo check --workspace --locked" `
+        -Executable "cargo" `
+        -Arguments @("check", "--workspace", "--locked") `
+        -OutputFile (Join-Path $tempRoot "check.txt") | Out-Null
 
-    # ── CLI bootstrap (no config needed) ─────────────────────
-    $help = Invoke-CmdStep "[3/5] sc-agent --help" "cargo run -- --help" ".smoke-help.txt"
+    Invoke-NativeStep `
+        -Name "[2/5] cargo test --workspace --locked" `
+        -Executable "cargo" `
+        -Arguments @("test", "--workspace", "--locked") `
+        -OutputFile (Join-Path $tempRoot "test.txt") | Out-Null
+
+    $help = Invoke-NativeStep `
+        -Name "[3/5] sc-agent --help" `
+        -Executable "cargo" `
+        -Arguments @("run", "--locked", "--", "--help") `
+        -OutputFile (Join-Path $tempRoot "help.txt")
     if ($help -notmatch "run" -or $help -notmatch "repl") {
-        Write-Host "FAIL: --help output missing expected subcommands" -ForegroundColor Red
-        exit 1
+        throw "--help output is missing expected subcommands"
     }
 
-    $ver = Invoke-CmdStep "[4/5] sc-agent --version" "cargo run -- --version" ".smoke-version.txt"
-    if ($ver -notmatch "sc-agent \d+\.\d+\.\d+") {
-        Write-Host "FAIL: --version output unexpected" -ForegroundColor Red
-        exit 1
+    $version = Invoke-NativeStep `
+        -Name "[4/5] sc-agent --version" `
+        -Executable "cargo" `
+        -Arguments @("run", "--locked", "--", "--version") `
+        -OutputFile (Join-Path $tempRoot "version.txt")
+    if ($version -notmatch "sc-agent\s+\d+\.\d+\.\d+") {
+        throw "--version output is unexpected: $version"
     }
-
-    # ── sc-agent init (isolated via temp HOME) ───────────────
-    $tempHome = Join-Path $env:TEMP "sc-agent-smoke-home"
-    Remove-Item -Recurse -Force $tempHome -ErrorAction SilentlyContinue
-    New-Item -ItemType Directory -Force $tempHome | Out-Null
 
     Write-Host ""
-    Write-Host "[5/5] sc-agent init (temp HOME=$tempHome)" -ForegroundColor Yellow
-    $oldHome = $env:USERPROFILE
+    Write-Host "[5/5] sc-agent config-init (isolated SC_AGENT_CONFIG)" -ForegroundColor Yellow
+    $configPath = Join-Path $tempRoot "profile\config.toml"
+    $oldConfig = $env:SC_AGENT_CONFIG
     try {
-        $env:USERPROFILE = $tempHome
-        # Preserve Rust toolchain paths so cargo still works
-        $env:RUSTUP_HOME = Join-Path $oldHome ".rustup"
-        $env:CARGO_HOME = Join-Path $oldHome ".cargo"
-        $init = cmd /c "cargo run -- config-init > .smoke-init.txt 2>&1"
-        $exitCode = $LASTEXITCODE
-        $initOut = Get-Content ".smoke-init.txt" -Raw -ErrorAction SilentlyContinue
-
-        if ($exitCode -ne 0) {
-            Write-Host "FAIL: init crashed" -ForegroundColor Red
-            Write-Host $initOut
-            exit $exitCode
+        $env:SC_AGENT_CONFIG = $configPath
+        $init = Invoke-NativeStep `
+            -Name "sc-agent config-init" `
+            -Executable "cargo" `
+            -Arguments @("run", "--locked", "--", "config-init") `
+            -OutputFile (Join-Path $tempRoot "init.txt")
+        if ($init -notmatch "Created default config") {
+            throw "config-init output is unexpected: $init"
         }
-        if ($initOut -match "Created default config") {
-            Write-Host "PASS: sc-agent config-init (isolated)" -ForegroundColor Green
-        } else {
-            Write-Host "WARN: init ran but output unexpected:" -ForegroundColor Yellow
-            Write-Host $initOut
+        if (-not (Test-Path $configPath -PathType Leaf)) {
+            throw "config-init did not create the isolated config file"
         }
-    } finally {
-        $env:USERPROFILE = $oldHome
-        Remove-Item -Recurse -Force $tempHome -ErrorAction SilentlyContinue
+        Write-Host "PASS: isolated config created at $configPath" -ForegroundColor Green
     }
-
-    # ── Cleanup ──────────────────────────────────────────────
-    Remove-Item ".smoke-*.txt" -Force -ErrorAction SilentlyContinue
+    finally {
+        if ($null -eq $oldConfig) {
+            Remove-Item Env:SC_AGENT_CONFIG -ErrorAction SilentlyContinue
+        } else {
+            $env:SC_AGENT_CONFIG = $oldConfig
+        }
+    }
 
     Write-Host ""
     Write-Host "==================================================" -ForegroundColor Green
@@ -101,4 +127,7 @@ try {
 }
 finally {
     Pop-Location
+    if (Test-Path $tempRoot) {
+        Remove-Item -Recurse -Force $tempRoot
+    }
 }

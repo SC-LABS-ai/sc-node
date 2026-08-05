@@ -474,6 +474,7 @@ mod tests {
         }
     }
 
+    #[cfg(windows)]
     #[tokio::test]
     async fn test_read_file_denies_reserved_device_name_inside_workspace() {
         let dir = tempfile::tempdir().unwrap();
@@ -487,6 +488,7 @@ mod tests {
         assert!(matches!(err, ToolError::PathNotAllowed(_)), "got {err:?}");
     }
 
+    #[cfg(windows)]
     #[tokio::test]
     async fn test_read_file_denies_alternate_data_stream_reference() {
         let dir = tempfile::tempdir().unwrap();
@@ -500,6 +502,7 @@ mod tests {
         assert!(matches!(err, ToolError::PathNotAllowed(_)), "got {err:?}");
     }
 
+    #[cfg(windows)]
     #[tokio::test]
     async fn test_write_then_read_file_case_insensitive_path_same_workspace() {
         let dir = tempfile::tempdir().unwrap();
@@ -539,6 +542,65 @@ mod tests {
             .unwrap();
         assert!(!read_result.is_error);
         assert_eq!(read_result.output, "hello");
+    }
+
+    #[cfg(unix)]
+    #[tokio::test]
+    async fn test_posix_file_tool_accepts_colon_and_windows_device_names() {
+        let dir = tempfile::tempdir().unwrap();
+        let ctx = ctx_with_workspace(dir.path());
+
+        for name in ["notes:archive.txt", "CON.txt"] {
+            let write = WriteFileTool
+                .execute(
+                    serde_json::json!({"path": name, "content": "posix"}),
+                    ctx_with_workspace(dir.path()),
+                )
+                .await
+                .unwrap();
+            assert!(!write.is_error);
+
+            let read = ReadFileTool
+                .execute(serde_json::json!({"path": name}), ctx.clone())
+                .await
+                .unwrap();
+            assert_eq!(read.output, "posix");
+        }
+    }
+
+    #[cfg(unix)]
+    #[tokio::test]
+    async fn test_posix_file_tool_paths_are_case_sensitive() {
+        let dir = tempfile::tempdir().unwrap();
+        let write = WriteFileTool
+            .execute(
+                serde_json::json!({"path": "Notes.txt", "content": "hello"}),
+                ctx_with_workspace(dir.path()),
+            )
+            .await
+            .unwrap();
+        assert!(!write.is_error);
+
+        let exact = ReadFileTool
+            .execute(
+                serde_json::json!({"path": "Notes.txt"}),
+                ctx_with_workspace(dir.path()),
+            )
+            .await
+            .unwrap();
+        assert_eq!(exact.output, "hello");
+
+        let wrong_case = ReadFileTool
+            .execute(
+                serde_json::json!({"path": "NOTES.TXT"}),
+                ctx_with_workspace(dir.path()),
+            )
+            .await
+            .unwrap_err();
+        assert!(
+            matches!(wrong_case, ToolError::ExecutionFailed(_)),
+            "got {wrong_case:?}"
+        );
     }
 
     #[tokio::test]

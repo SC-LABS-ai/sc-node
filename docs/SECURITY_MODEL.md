@@ -1,6 +1,6 @@
 # SC Node — Security Model
 
-> **As of:** 2026-07-16 · Experimental public alpha.
+> **As of:** 2026-08-05 · Experimental public alpha.
 >
 > This document describes the security controls that exist today and, just as
 > importantly, the ones that do **not**. It is not a claim that SC Node is
@@ -17,14 +17,16 @@ pass the permission layer before it can do anything.
 ### Workspace path boundaries (`sc-sandbox`)
 
 File tools resolve their path argument relative to the working directory,
-syntactically normalize it (resolving `.`/`..` without touching disk), fold
-Windows prefix forms (drive letter, UNC, extended-length `\\?\`), and check it
-against `workspace.allow` / `workspace.deny` before any filesystem operation. An
-empty allowlist denies all filesystem access. As defense in depth against
-reparse-point escapes, the nearest existing ancestor is canonicalized (following
-symlinks/junctions) and re-checked. Device paths (`\\.\…`), NTFS alternate data
-streams (`name:stream`), reserved device names (`CON`, `NUL`, `COM1`, …), and
-trailing-dot/space name tricks are rejected.
+syntactically normalize it (resolving `.`/`..` without touching disk), and check
+it against `workspace.allow` / `workspace.deny` before any filesystem operation.
+An empty allowlist denies all filesystem access. As defense in depth against
+symlink/junction escapes, the nearest existing ancestor is canonicalized and
+re-checked. On Windows, drive-letter, UNC, and extended-length prefix forms are
+folded consistently; device paths, NTFS alternate data streams, reserved device
+names, and trailing-dot/space tricks are rejected. On POSIX systems, matching is
+case-sensitive and valid POSIX names containing colons or backslashes are
+preserved. Both platforms have dedicated boundary tests; Linux also runs a live
+symlink-escape test in CI.
 
 ### Permissions and the approval gate (`sc-tool-core`, `sc-agent-core`)
 
@@ -129,8 +131,8 @@ this SSRF/metadata threat before shipping.
   OS level and does not defend against a malicious operator on their own machine.
   For stronger isolation, run it under a low-privilege account and/or inside a
   container or VM.
-- **Windows-only verification.** Path/permission logic is platform-independent in
-  its unit tests, but only Windows execution has been exercised.
+- **macOS is unverified.** Windows and Linux run separate full CI gates and
+  platform-specific path tests, but macOS execution has not been exercised.
 - **No `cargo audit` / `cargo deny` automation** in CI (tracked gap).
 
 ## Operator recommendations

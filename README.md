@@ -4,7 +4,7 @@
 
 **SC Node is an experimental, provider-neutral Rust agent harness for executing tool-using AI agents across local and cloud models.**
 
-Public Alpha · Windows tested · Ollama and NVIDIA NIM live-tested · API may change
+Public Alpha · Windows and Linux tested · Ollama and NVIDIA NIM live-tested · API may change
 
 [![License: MIT OR Apache-2.0](https://img.shields.io/badge/license-MIT%20OR%20Apache--2.0-blue.svg)](#license)
 [![CI](https://github.com/SC-LABS-ai/sc-node/actions/workflows/ci.yml/badge.svg)](https://github.com/SC-LABS-ai/sc-node/actions/workflows/ci.yml)
@@ -22,8 +22,9 @@ Ollama model or an OpenAI-compatible cloud endpoint — with the safety controls
 you actually want and nothing you don't. It is designed for low overhead,
 local-first defaults, and honest, inspectable behaviour.
 
-This is an **experimental public alpha**. The API may change, and only Windows
-has been exercised so far. Feedback is welcome.
+This is an **experimental public alpha**. The API may change. Windows and
+Linux are exercised by the full CI gate; macOS remains unverified. Feedback is
+welcome.
 
 ## What SC Node is
 
@@ -77,7 +78,7 @@ what fits your risk tolerance:
 ```bash
 git clone https://github.com/SC-LABS-ai/sc-node
 cd sc-node
-cargo build --release
+cargo build --release --locked
 
 # Create the default config at ~/.sc-agent/config.toml
 ./target/release/sc-agent init
@@ -99,7 +100,8 @@ On Windows the binary is `target\release\sc-agent.exe`. You can also run via
 - No system libraries beyond what Cargo pulls in (TLS is via `rustls`, not
   OpenSSL).
 
-Built and tested on Windows. Linux and macOS are unverified so far.
+Built and tested on Windows and Linux through separate CI jobs. macOS is
+unverified so far.
 
 ## Ollama example (local, live-tested)
 
@@ -267,13 +269,19 @@ The fully-commented reference is
 ## Testing
 
 ```bash
-cargo test --workspace
+cargo test --workspace --locked
 ```
 
-Windows PowerShell helpers:
+Cross-platform smoke check (PowerShell 7 on Linux, Windows PowerShell or
+PowerShell 7 on Windows):
 
 ```powershell
-powershell -ExecutionPolicy Bypass -File .\scripts\smoke-check.ps1
+./scripts/smoke-check.ps1
+```
+
+Additional Windows-oriented verification helpers:
+
+```powershell
 powershell -ExecutionPolicy Bypass -File .\scripts\verify-local.ps1
 powershell -ExecutionPolicy Bypass -File .\scripts\verify-public-beta.ps1
 ```
@@ -304,7 +312,8 @@ yet proven** and **no benchmark numbers are published**. See
 - `sc-memory` is present but not wired into the runtime.
 - Ollama streaming is batch-collect; cloud (OpenAI-compatible) streaming is
   incremental.
-- Only verified on Windows; Linux/macOS and the OpenRouter adapter are unverified.
+- Verified on Windows and Linux; macOS and the OpenRouter adapter remain
+  unverified.
 
 See [docs/SECURITY_MODEL.md](docs/SECURITY_MODEL.md) and
 [THREAT_MODEL.md](THREAT_MODEL.md) for the full analysis.
@@ -312,9 +321,9 @@ See [docs/SECURITY_MODEL.md](docs/SECURITY_MODEL.md) and
 ## Roadmap
 
 Near-term direction (no dates promised) — see [docs/ROADMAP.md](docs/ROADMAP.md):
-stabilize the public Rust API, verify on Linux, publish a benchmark methodology
-and first reproducible numbers, wire `sc-memory` into the runtime, and complete
-the OpenRouter adapter.
+stabilize the public Rust API, publish a benchmark methodology and first
+reproducible numbers, verify macOS, wire `sc-memory` into the runtime, and
+complete the OpenRouter adapter.
 
 ## Contributing
 
