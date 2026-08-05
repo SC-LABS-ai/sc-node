@@ -1,0 +1,18 @@
+[package]
+name = "sc-public-api-consumer"
+version = "0.0.0"
+edition = "2024"
+publish = false
+
+[dependencies]
+async-trait = { workspace = true }
+chrono = { workspace = true }
+futures = { workspace = true }
+serde_json = { workspace = true }
+tokio = { workspace = true }
+sc-message-types = { path = "../../crates/sc-message-types" }
+sc-provider-core = { path = "../../crates/sc-provider-core" }
+sc-tool-core = { path = "../../crates/sc-tool-core" }
+sc-config = { path = "../../crates/sc-config" }
+sc-contract = { path = "../../crates/sc-contract" }
+sc-proof = { path = "../../crates/sc-proof" }

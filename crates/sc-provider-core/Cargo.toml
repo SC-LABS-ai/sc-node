@@ -4,6 +4,10 @@ version = { workspace = true }
 edition = "2024"
 license = { workspace = true }
 repository = { workspace = true }
+homepage = { workspace = true }
+rust-version = { workspace = true }
+documentation = "https://docs.rs/sc-provider-core"
+readme = "README.md"
 description = "Core provider traits and OpenAI-compatible schema for SC Node"
 categories = { workspace = true }
 keywords = { workspace = true }
@@ -16,5 +20,5 @@ serde = { workspace = true }
 serde_json = { workspace = true }
 thiserror = { workspace = true }
 tokio = { version = "1", features = ["time", "rt-multi-thread", "macros", "net", "io-util", "sync"] }
-sc-message-types = { path = "../sc-message-types" }
+sc-message-types = { version = "0.1.0-alpha.2", path = "../sc-message-types" }
 

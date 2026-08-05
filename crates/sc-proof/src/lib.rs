@@ -95,6 +95,8 @@
 //! Callers that construct [`AuditEvent`]s remain responsible for not
 //! feeding genuinely sensitive raw values into `data` in the first place.
 
+#![deny(rustdoc::broken_intra_doc_links, rustdoc::private_intra_doc_links)]
+
 use std::collections::BTreeMap;
 
 use chrono::{DateTime, Utc};
@@ -223,11 +225,11 @@ pub enum ProofError {
 /// Recursively redact sensitive values from a JSON value.
 ///
 /// Any object key whose name contains (case-insensitively) one of
-/// [`SENSITIVE_KEY_MARKERS`] has its value replaced with
+/// `SENSITIVE_KEY_MARKERS` has its value replaced with
 /// `"[REDACTED]"`; nested objects/arrays are otherwise redacted
 /// recursively so secrets cannot hide a level deeper. Independently, every
 /// string value (object value, array element, or otherwise) is passed
-/// through [`scrub_scalar_string`], so secret-shaped tokens are redacted
+/// through `scrub_scalar_string`, so secret-shaped tokens are redacted
 /// even when they are not behind a sensitively-named key (e.g. a
 /// positional CLI argument or an embedded `Authorization: Bearer ...`
 /// header inside a larger command string). See the module docs for the

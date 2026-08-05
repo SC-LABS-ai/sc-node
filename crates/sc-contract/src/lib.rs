@@ -29,6 +29,8 @@
 //! round-tripping a value through `serde_json::Value` sorts every object's
 //! keys automatically.
 
+#![deny(rustdoc::broken_intra_doc_links, rustdoc::private_intra_doc_links)]
+
 pub mod preflight;
 
 use serde::{Deserialize, Serialize};

@@ -2,6 +2,7 @@
 name = "sc-agent"
 version = "0.1.0-alpha.2"
 edition = "2024"
+rust-version = "1.85"
 license = "MIT OR Apache-2.0"
 repository = "https://github.com/SC-LABS-ai/sc-node"
 homepage = "https://sclabs.uk"
@@ -29,11 +30,13 @@ members = [
     "crates/sc-proof",
     "crates/sc-memory",
     "tools/sc-benchmark",
+    "tests/public-api-consumer",
 ]
 
 [workspace.package]
 version = "0.1.0-alpha.2"
 edition = "2024"
+rust-version = "1.85"
 license = "MIT OR Apache-2.0"
 repository = "https://github.com/SC-LABS-ai/sc-node"
 homepage = "https://sclabs.uk"

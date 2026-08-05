@@ -1,5 +1,7 @@
 //! Core tool traits, registry, permissions, and approval gates for SC Node.
 
+#![deny(rustdoc::broken_intra_doc_links, rustdoc::private_intra_doc_links)]
+
 use async_trait::async_trait;
 use sc_config::{PermissionsConfig, ToolPermission, WorkspaceConfig};
 use sc_message_types::{SessionId, ToolDefinition, ToolResult};
