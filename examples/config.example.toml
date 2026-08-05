@@ -1,4 +1,4 @@
-﻿# SC Node â€” Example Configuration
+# SC Node — Example Configuration
 #
 # Copy this file to ~/.sc-agent/config.toml and edit as needed.
 # Or run: sc-agent init (creates default config)
@@ -9,7 +9,7 @@
 #   - OpenRouter: SC_AGENT_OPENROUTER_API_KEY
 #   - NVIDIA:     SC_AGENT_NVIDIA_API_KEY
 
-# â”€â”€ General settings â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+# ── General settings ───────────────────────────────────────────
 [general]
 # Log level: trace, debug, info, warn, error
 log_level = "info"
@@ -21,7 +21,7 @@ data_dir = "~/.sc-agent"
 # Disable all telemetry (must remain true)
 no_telemetry = true
 
-# â”€â”€ Workspace allowlist â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+# ── Workspace allowlist ────────────────────────────────────────
 # Only paths matching these patterns are accessible to tools.
 # Leave empty to deny all filesystem access.
 # Patterns support glob syntax and ~ expansion.
@@ -43,13 +43,13 @@ deny = [
     "**/target/**",
 ]
 
-# â”€â”€ Tool Permissions â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+# ── Tool Permissions ───────────────────────────────────────────
 # default_policy: "allow" | "deny" | "ask"
 # Per-tool overrides below.
 [permissions]
 default_policy = "ask"
 
-# Shell tool â€” high risk, defaults to "ask"
+# Shell tool — high risk, defaults to "ask"
 [permissions.tools.shell]
 policy = "ask"
 
@@ -93,7 +93,7 @@ deny_patterns = [
     "reboot",
 ]
 
-# File tools â€” moderate risk
+# File tools — moderate risk
 [permissions.tools.file]
 policy = "ask"
 allow_patterns = [
@@ -119,9 +119,9 @@ deny_patterns = [
     "credentials*",
 ]
 
-# â”€â”€ Providers â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+# ── Providers ──────────────────────────────────────────────────
 
-# Ollama â€” LOCAL model (no API key, enabled by default)
+# Ollama — LOCAL model (no API key, enabled by default)
 [providers.ollama]
 enabled = true
 base_url = "http://localhost:11434"      # default Ollama endpoint
@@ -130,8 +130,8 @@ keep_alive = "5m"                        # Ollama keep-alive duration
 timeout_secs = 120                       # timeout for local inference
 max_retries = 2
 
-# OpenRouter â€” CLOUD model aggregator
-# âš  Disabled by default. Set enabled = true to use.
+# OpenRouter — CLOUD model aggregator
+# ⚠ Disabled by default. Set enabled = true to use.
 # API key goes in environment: SC_AGENT_OPENROUTER_API_KEY
 [providers.openrouter]
 enabled = false
@@ -140,8 +140,8 @@ default_model = "openai/gpt-4.1-mini"
 timeout_secs = 60
 max_retries = 3
 
-# NVIDIA NIM â€” CLOUD model API
-# âš  Disabled by default. Set enabled = true to use.
+# NVIDIA NIM — CLOUD model API
+# ⚠ Disabled by default. Set enabled = true to use.
 # API key goes in environment: SC_AGENT_NVIDIA_API_KEY
 [providers.nvidia]
 enabled = false
@@ -150,7 +150,7 @@ default_model = "meta/llama-3.3-70b-instruct"
 timeout_secs = 60
 max_retries = 3
 
-# â”€â”€ Model Routing â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+# ── Model Routing ──────────────────────────────────────────────
 # First matching rule wins. Fallback is used if no rule matches.
 [routing]
 fallback_provider = "ollama"
@@ -168,13 +168,10 @@ match_contains = ["research", "search", "find", "lookup", "arxiv"]
 provider = "openrouter"
 model = "perplexity/sonar-pro"
 
-# â”€â”€ Audit Log â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+# ── Audit Log ──────────────────────────────────────────────────
 [audit]
 enabled = true
-path = "audit.log"                       # absolute path recommended; a relative
-                                         # path currently resolves against the
-                                         # process working directory, not data_dir
-                                         # (known alpha limitation)
+path = "audit.log"                       # relative paths resolve under general.data_dir
 max_size_mb = 100                        # rotate when log reaches this size
 max_files = 10                           # keep at most N rotated files
 log_args = false                         # do NOT log tool arguments (privacy)
