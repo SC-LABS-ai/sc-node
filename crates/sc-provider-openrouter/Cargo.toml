@@ -14,3 +14,7 @@ async-trait = { workspace = true }
 sc-provider-core = { path = "../sc-provider-core" }
 sc-config = { path = "../sc-config" }
 sc-message-types = { path = "../sc-message-types" }
+
+[dev-dependencies]
+futures = { workspace = true }
+serde_json = { workspace = true }

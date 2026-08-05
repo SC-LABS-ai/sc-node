@@ -19,6 +19,12 @@ API is unstable during the alpha).
 - **Linux verification.** Added a separate Ubuntu CI job covering formatting,
   locked workspace check, Clippy with warnings denied, tests, release build, and
   cross-platform CLI smoke.
+- **Public Rust API baseline.** Added a separate external consumer crate,
+  fatal Rustdoc-link checks, SemVer/publication policy, and package verification
+  for the first independent crate wave.
+- **OpenRouter verification gate.** Added deterministic adapter tests, public
+  catalog/schema validation, configured-model checks, and an explicit ignored
+  authenticated streaming smoke test that reports SKIP when no key is available.
 
 ### Changed
 
@@ -28,6 +34,9 @@ API is unstable during the alpha).
   enforced, while POSIX case sensitivity and valid colon/backslash filenames are
   handled according to Linux filesystem rules. A live Unix symlink-escape test is
   included.
+- **OpenRouter model metadata.** Provider-reported names and context windows are
+  preserved, and tool support is derived from `supported_parameters` instead of
+  being assumed for every model.
 
 ## [0.1.0-alpha.2] — 2026-08-04
 

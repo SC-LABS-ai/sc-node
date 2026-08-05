@@ -1,6 +1,6 @@
 # SC Node — Providers
 
-> **As of:** 2026-07-16 · Experimental public alpha.
+> **As of:** 2026-08-05 · Experimental public alpha.
 
 SC Node is provider-neutral. A provider is any implementation of the
 `sc_provider_core::Provider` trait; the binary constructs whichever providers are
@@ -12,7 +12,7 @@ SC Node is provider-neutral. A provider is any implementation of the
 |----------|------|---------|-----------|------------|--------|
 | Ollama | Local | Enabled | Batch-collect | None (local) | Live-tested |
 | NVIDIA NIM | Cloud | Disabled | Incremental SSE | `SC_AGENT_NVIDIA_API_KEY` | Live-tested |
-| OpenRouter | Cloud | Disabled | Incremental SSE | `SC_AGENT_OPENROUTER_API_KEY` | Implemented, not live-tested |
+| OpenRouter | Cloud | Disabled | Incremental SSE | `SC_AGENT_OPENROUTER_API_KEY` | Catalog verified; authenticated completion pending |
 
 Cloud providers are opt-in. Enabling at least one cloud provider is the explicit
 cloud opt-in that lets the router select a cloud target; there is no silent cloud
@@ -81,15 +81,21 @@ that differ or trip up strict endpoints:
 - **Credential safety.** The client refuses to attach a credential to a non-`https`
   base URL unless it points at a local/loopback host.
 
-## OpenRouter (implemented, not live-tested)
+## OpenRouter (catalog verified; authenticated completion pending)
 
 - **Endpoint:** `https://openrouter.ai/api/v1` by default.
 - **Opt-in.** Set `enabled = true` and provide the key via
   `SC_AGENT_OPENROUTER_API_KEY`.
-- Uses the same shared OpenAI-compatible client as NVIDIA NIM (real
-  `list_models` and streaming `complete`). It has **not been live-tested**, so its
-  status is not promoted beyond "implemented" — treat behaviour against the live
-  endpoint as unverified and report issues.
+- Uses the same shared OpenAI-compatible client as NVIDIA NIM (`list_models`
+  and incremental streaming `complete`).
+- Model names, context windows, and supported parameters are read from the
+  OpenRouter catalog; tool support is no longer guessed for every model.
+- The public catalog schema and the configured default/research model IDs have
+  been verified. An authenticated completion through the Rust adapter remains
+  pending because no OpenRouter key is stored on the test workstation.
+- Run `./scripts/verify-openrouter.ps1`. Without a key it reports the authenticated
+  portion as **SKIP**; with a key it runs the ignored adapter-level streaming smoke
+  test explicitly.
 
 ```toml
 [providers.openrouter]
@@ -129,3 +135,5 @@ pub trait Provider: Send + Sync {
 
 See [ARCHITECTURE.md](ARCHITECTURE.md) §3–§4 for how providers plug into routing
 and the run loop.
+
+Provider selection rationale: [PROVIDER_DECISION_2026-08-05.md](PROVIDER_DECISION_2026-08-05.md).
