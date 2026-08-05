@@ -1,0 +1,27 @@
+[package]
+name = "sc-benchmark"
+version.workspace = true
+edition.workspace = true
+license.workspace = true
+publish = false
+
+[dependencies]
+anyhow = { workspace = true }
+async-trait = { workspace = true }
+chrono = { workspace = true }
+clap = { workspace = true }
+futures = { workspace = true }
+reqwest = { workspace = true }
+serde = { workspace = true }
+serde_json = { workspace = true }
+tempfile = { workspace = true }
+tokio = { workspace = true }
+
+sc-agent-core = { path = "../../crates/sc-agent-core" }
+sc-audit = { path = "../../crates/sc-audit" }
+sc-config = { path = "../../crates/sc-config" }
+sc-message-types = { path = "../../crates/sc-message-types" }
+sc-proof = { path = "../../crates/sc-proof" }
+sc-provider-core = { path = "../../crates/sc-provider-core" }
+sc-provider-ollama = { path = "../../crates/sc-provider-ollama" }
+sc-tool-core = { path = "../../crates/sc-tool-core" }

@@ -419,7 +419,6 @@ async fn execute_task(
 
         // Execute all tool calls through the central permission gate.
         for (id, name, input) in tool_calls_this_round {
-            println!("\n[Tool Call] {}: {:?}", name, input);
             let call = ToolCall { id, name, input };
             let outcome = dispatch_tool_call(
                 &call,
