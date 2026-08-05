@@ -170,6 +170,9 @@ mod tests {
             object: None,
             created: None,
             owned_by: None,
+            name: None,
+            context_length: None,
+            supported_parameters: None,
         };
         let info = map_nim_model_to_model_info(&model);
         assert_eq!(info.id, "nemotron-3-ultra");
@@ -185,6 +188,9 @@ mod tests {
             object: None,
             created: None,
             owned_by: None,
+            name: None,
+            context_length: None,
+            supported_parameters: None,
         };
         let info = map_nim_model_to_model_info(&model);
         assert_eq!(info.context_window, 32768);
@@ -197,6 +203,9 @@ mod tests {
             object: None,
             created: None,
             owned_by: None,
+            name: None,
+            context_length: None,
+            supported_parameters: None,
         };
         let info = map_nim_model_to_model_info(&model);
         assert_eq!(info.context_window, 4096);

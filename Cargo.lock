@@ -2335,9 +2335,11 @@ name = "sc-provider-openrouter"
 version = "0.1.0-alpha.2"
 dependencies = [
  "async-trait",
+ "futures",
  "sc-config",
  "sc-message-types",
  "sc-provider-core",
+ "serde_json",
  "tokio",
 ]
 

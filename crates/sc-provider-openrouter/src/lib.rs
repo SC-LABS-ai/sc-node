@@ -14,21 +14,41 @@ use sc_provider_core::{
 };
 use std::time::Duration;
 
-/// Conservative default context window used when mapping an OpenRouter
-/// model listing entry to SC Node's [`ModelInfo`]. OpenRouter proxies a
-/// large, heterogeneous set of upstream models; the minimal
-/// `/models` schema this crate parses (id/object/created/owned_by) does
-/// not carry a context length, so we do not attempt to guess one from the
-/// model id the way the single-vendor NIM provider does.
+/// Conservative fallback used only when an OpenRouter-compatible catalog
+/// omits `context_length`. The live OpenRouter catalog normally provides the
+/// real value for every model, so this is a compatibility fallback rather than
+/// a claim about the model.
 const DEFAULT_CONTEXT_WINDOW: u32 = 8192;
 
-/// Map an OpenRouter model listing entry to SC Node's [`ModelInfo`].
+fn advertised_parameter(m: &OpenAiModel, expected: &str) -> bool {
+    m.supported_parameters
+        .as_deref()
+        .unwrap_or_default()
+        .iter()
+        .any(|parameter| parameter == expected)
+}
+
+/// Map an OpenRouter model listing entry to SC Node's [`ModelInfo`] without
+/// inventing model capabilities. Name, context length, and tool support come
+/// from the provider catalog when present. Streaming remains `true` because it
+/// is a capability of the OpenRouter adapter/protocol path itself.
 fn map_openrouter_model_to_model_info(m: &OpenAiModel) -> ModelInfo {
+    let name = m
+        .name
+        .as_deref()
+        .filter(|name| !name.trim().is_empty())
+        .unwrap_or(&m.id)
+        .to_string();
+    let context_window = m
+        .context_length
+        .map(|value| u32::try_from(value).unwrap_or(u32::MAX))
+        .unwrap_or(DEFAULT_CONTEXT_WINDOW);
+
     ModelInfo {
         id: m.id.clone(),
-        name: m.id.clone(),
-        context_window: DEFAULT_CONTEXT_WINDOW,
-        supports_tools: true,
+        name,
+        context_window,
+        supports_tools: advertised_parameter(m, "tools"),
         supports_streaming: true,
     }
 }
@@ -157,19 +177,74 @@ mod tests {
         assert_eq!(chat_req.model, "explicit/model");
     }
 
-    #[test]
-    fn test_map_model_info_uses_conservative_default_context_window() {
-        let model = OpenAiModel {
-            id: "openai/gpt-4.1-mini".into(),
-            object: None,
+    fn model_fixture(
+        id: &str,
+        name: Option<&str>,
+        context_length: Option<u64>,
+        supported_parameters: Option<Vec<&str>>,
+    ) -> OpenAiModel {
+        OpenAiModel {
+            id: id.into(),
+            object: Some("model".into()),
             created: None,
             owned_by: None,
-        };
+            name: name.map(str::to_string),
+            context_length,
+            supported_parameters: supported_parameters
+                .map(|items| items.into_iter().map(str::to_string).collect()),
+        }
+    }
+
+    #[test]
+    fn test_map_model_info_uses_catalog_metadata() {
+        let model = model_fixture(
+            "vendor/model",
+            Some("Vendor: Model"),
+            Some(1_000_000),
+            Some(vec!["temperature", "tools", "tool_choice"]),
+        );
         let info = map_openrouter_model_to_model_info(&model);
-        assert_eq!(info.id, "openai/gpt-4.1-mini");
-        assert_eq!(info.context_window, DEFAULT_CONTEXT_WINDOW);
+        assert_eq!(info.id, "vendor/model");
+        assert_eq!(info.name, "Vendor: Model");
+        assert_eq!(info.context_window, 1_000_000);
         assert!(info.supports_tools);
         assert!(info.supports_streaming);
+    }
+
+    #[test]
+    fn test_map_model_info_does_not_invent_tool_support() {
+        let model = model_fixture(
+            "vendor/text-only",
+            Some("Text only"),
+            Some(32_768),
+            Some(vec!["temperature", "max_tokens"]),
+        );
+        let info = map_openrouter_model_to_model_info(&model);
+        assert!(!info.supports_tools);
+    }
+
+    #[test]
+    fn test_map_model_info_uses_conservative_fallbacks_when_metadata_is_absent() {
+        let model = model_fixture("openai/gpt-4.1-mini", None, None, None);
+        let info = map_openrouter_model_to_model_info(&model);
+        assert_eq!(info.name, "openai/gpt-4.1-mini");
+        assert_eq!(info.context_window, DEFAULT_CONTEXT_WINDOW);
+        assert!(!info.supports_tools);
+        assert!(info.supports_streaming);
+    }
+
+    #[test]
+    fn test_openrouter_catalog_shape_deserializes() {
+        let model: OpenAiModel = serde_json::from_value(serde_json::json!({
+            "id": "qwen/qwen3.8-max",
+            "name": "Qwen: Qwen3.8 Max",
+            "context_length": 1000000,
+            "supported_parameters": ["temperature", "tools", "tool_choice"]
+        }))
+        .expect("OpenRouter catalog entry should deserialize");
+        let info = map_openrouter_model_to_model_info(&model);
+        assert_eq!(info.context_window, 1_000_000);
+        assert!(info.supports_tools);
     }
 
     #[test]
@@ -179,21 +254,57 @@ mod tests {
         assert_eq!(provider.name(), "OpenRouter");
     }
 
-    /// Live smoke test: only runs a real network call if a real
-    /// OpenRouter API key is already present in the environment.
-    /// Otherwise it is a no-op pass, by design - CI/dev machines without
-    /// the key must never be blocked on network access.
+    /// Authenticated OpenRouter smoke test. It is deliberately ignored in
+    /// normal CI: running it requires a real key, live network access, and may
+    /// incur a small provider charge. Use `scripts/verify-openrouter.ps1` to run
+    /// it explicitly when credentials are available.
     #[tokio::test]
-    async fn live_list_models_if_key_present() {
-        if std::env::var("SC_AGENT_OPENROUTER_API_KEY").is_err() {
-            eprintln!(
-                "skipping live OpenRouter test: SC_AGENT_OPENROUTER_API_KEY not set in this environment"
-            );
-            return;
-        }
+    #[ignore = "requires SC_AGENT_OPENROUTER_API_KEY and live OpenRouter access"]
+    async fn live_authenticated_catalog_and_completion() {
+        use futures::StreamExt;
 
-        let provider = OpenRouterProvider::new(OpenRouterConfig::default()).unwrap();
-        let models = provider.list_models().await.unwrap();
+        let key = std::env::var("SC_AGENT_OPENROUTER_API_KEY")
+            .expect("SC_AGENT_OPENROUTER_API_KEY must be set for the ignored live test");
+        assert!(!key.trim().is_empty(), "OpenRouter key must not be blank");
+
+        let mut config = OpenRouterConfig::default();
+        if let Ok(model) = std::env::var("SC_AGENT_OPENROUTER_TEST_MODEL")
+            && !model.trim().is_empty()
+        {
+            config.default_model = model;
+        }
+        let provider = OpenRouterProvider::new(config.clone()).expect("provider construction");
+        let models = provider.list_models().await.expect("live model catalog");
         assert!(!models.is_empty(), "expected at least one live model");
+        assert!(
+            models.iter().any(|model| model.id == config.default_model),
+            "configured live-test model is missing from the catalog"
+        );
+
+        let request = CompletionRequest {
+            model: config.default_model,
+            messages: vec![Message::user(
+                "Reply exactly with SC NODE OPENROUTER TEST OK",
+            )],
+            tools: vec![],
+            system: None,
+            stream: true,
+            temperature: Some(0.0),
+            max_tokens: Some(32),
+        };
+        let mut stream = provider.complete(request).await.expect("live completion");
+        let mut text = String::new();
+        while let Some(event) = stream.next().await {
+            match event.expect("live stream event") {
+                sc_message_types::StreamEvent::TextDelta { text: delta } => text.push_str(&delta),
+                sc_message_types::StreamEvent::End { .. } => {}
+                sc_message_types::StreamEvent::ToolUse { .. }
+                | sc_message_types::StreamEvent::Error { .. } => {}
+            }
+        }
+        assert!(
+            text.contains("SC NODE OPENROUTER TEST OK"),
+            "unexpected live completion response: {text:?}"
+        );
     }
 }

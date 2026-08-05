@@ -11,12 +11,15 @@ intent.
 - **Wire `sc-memory` into the runtime.** The memory/RAG crate exists but is not
   constructed by the binary. Integrate it behind an explicit, opt-in config
   section and a `memory` feature.
-- **Complete the OpenRouter adapter.** The adapter is implemented on the shared
-  OpenAI-compatible client but has not been live-tested; validate it against the
-  live endpoint and promote its status once verified.
+- **Complete authenticated OpenRouter verification.** Provider-specific catalog
+  metadata and deterministic tests are complete; run the explicit adapter-level
+  catalog + streaming completion gate when a real key is available.
 
 ## Recently completed
 
+- **Provider direction.** Chose to harden OpenRouter before adding another
+  adapter, replaced guessed model capabilities with catalog metadata, and added
+  honest public-catalog/authenticated-live verification gates.
 - **Public Rust API baseline.** Classified intentional alpha surfaces, added a
   separate external consumer crate, made Rustdoc warnings fatal, documented
   SemVer intent and publication waves, and added reproducible package gates.

@@ -145,8 +145,9 @@ normalizes the differences between endpoints:
 - a top-level `system` parameter is folded into a leading `system` message;
 - responses are decoded as incremental Server-Sent Events (SSE).
 
-NVIDIA NIM uses this client and is live-tested. An **OpenRouter adapter is
-implemented on the same client but has not been live-tested yet.** See
+NVIDIA NIM uses this client and is live-tested. The **OpenRouter adapter
+has verified public-catalog metadata and deterministic adapter tests; an
+authenticated completion remains pending.** See
 [docs/PROVIDERS.md](docs/PROVIDERS.md).
 
 ## CLI commands
@@ -320,8 +321,8 @@ not a universal framework or Rust-vs-Python claim. See
 - `sc-memory` is present but not wired into the runtime.
 - Ollama streaming is batch-collect; cloud (OpenAI-compatible) streaming is
   incremental.
-- Verified on Windows and Linux; macOS and the OpenRouter adapter remain
-  unverified.
+- Verified on Windows and Linux; macOS remains unverified. OpenRouter's
+  public catalog is verified, while authenticated completion remains pending.
 
 See [docs/SECURITY_MODEL.md](docs/SECURITY_MODEL.md) and
 [THREAT_MODEL.md](THREAT_MODEL.md) for the full analysis.
@@ -330,7 +331,7 @@ See [docs/SECURITY_MODEL.md](docs/SECURITY_MODEL.md) and
 
 Near-term direction (no dates promised) — see [docs/ROADMAP.md](docs/ROADMAP.md):
 stabilize the public Rust API, verify macOS, wire `sc-memory` into the runtime,
-and complete the OpenRouter adapter. The first reproducible benchmark set is now
+and complete authenticated OpenRouter verification. The first reproducible benchmark set is now
 published.
 
 ## Contributing
