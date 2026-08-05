@@ -1,52 +1,152 @@
 # SC Node — Benchmarking
 
-> **As of:** 2026-07-16 · Experimental public alpha.
+> **As of:** 2026-08-05 · Experimental public alpha.
 
 ## State
 
-SC Node is **designed for low overhead**: a thin Rust execution layer, no
-background threads beyond the async runtime, no telemetry, and streaming that
-avoids buffering whole cloud responses. That is a design intent, **not a measured
-result.**
+SC Node is designed as a thin Rust execution layer, but design intent is not a
+performance result. Performance claims are accepted only when the raw data,
+commit, environment, model, endpoint, commands, and iteration policy are
+published together.
 
-- **Competitive performance is NOT yet proven.**
-- **No benchmark numbers are published.** Any figure you see elsewhere that is
-  not reproduced by the methodology below should be treated as unverified.
+The repository now includes a reproducible benchmark harness. A first reference
+run is stored under [`benchmarks/`](benchmarks/) when available. Results from one
+machine and model are evidence for that configuration only; they are not a
+universal Rust-vs-Python or SC-Node-vs-framework claim.
 
-This document exists so that when numbers are published, they are produced by a
-stated, reproducible method rather than asserted.
+## Run the complete benchmark
 
-## Planned methodology
+From the repository root on Windows PowerShell or PowerShell 7:
 
-Each measurement should compare a **baseline** (calling the provider directly)
-against **through-SC-Node**, so the reported overhead is SC Node's contribution
-and not the model's latency:
+```powershell
+./scripts/benchmark-overhead.ps1 `
+  -Model "qwen:latest" `
+  -FixtureIterations 20 `
+  -WarmIterations 8 `
+  -ColdIterations 3 `
+  -SyntheticIterations 100 `
+  -MicroIterations 100000 `
+  -MicroIoIterations 1000
+```
 
-1. **Direct-provider-call vs through-SC-Node.** Same prompt, same model, same
-   endpoint; measure wall-clock and CPU for a direct HTTP call vs the same task
-   routed through SC Node's loop.
-2. **Cold vs warm start.** Process startup + config load + provider construction
-   (cold) vs steady-state per-task cost (warm), reported separately.
-3. **Routing overhead.** Time spent in deterministic route resolution, isolated
-   from any network call (the routing module is pure and can be measured on its
-   own).
-4. **Tool-dispatch overhead.** Cost of the permission gate + audit emission per
-   tool call, measured with a no-op tool so model/tool latency is excluded.
-5. **Memory usage.** Resident set for an idle session and during a representative
-   multi-round task.
-6. **Audit / proof overhead.** Incremental cost of audit logging (on vs off) and
-   of building/verifying a proof-bundle hash chain.
+The helper is built with:
 
-## Reproducibility requirements
+```text
+cargo build --release --locked -p sc-benchmark
+```
 
-Any published number must ship with:
+An explicit `-OutputDirectory` may point outside the repository. The script
+holds an exclusive lock on that directory so duplicate measurement processes
+cannot corrupt the same run.
 
-- exact SC Node commit hash and `cargo build --release` profile;
-- OS, CPU, and RAM of the measurement machine;
-- provider, endpoint, and model (and whether it was local or cloud);
-- the exact command(s) run and the raw measurements (not just an average);
-- number of iterations and how outliers/warmup were handled;
-- a note on any variability (e.g. cloud rate limits, thermal throttling).
+## Measurement layers
 
-Numbers that cannot be reproduced from this information will not be presented as
-benchmarks. Progress is tracked in [ROADMAP.md](ROADMAP.md).
+### 1. Deterministic Ollama-compatible fixture
+
+A loopback-only fixture server returns an immediate fixed Ollama NDJSON response.
+The harness alternates call order and compares:
+
+```text
+direct HTTP request
+versus
+SC Node route -> session -> Ollama adapter -> stream parse -> output
+```
+
+Because no model runs, this is the primary process-level estimate of SC Node's
+incremental provider path on the measured machine. It still includes process
+startup and console formatting for both paths.
+
+### 2. Real local Ollama model
+
+The same prompt, model, endpoint, streaming flag, temperature, token limit, and
+keep-alive setting are sent directly and through SC Node.
+
+- **Warm:** the model is preloaded and direct/node order alternates each pair.
+- **Cold:** the model is explicitly unloaded before every measured process.
+
+Real-model differences are reported as *observed differences*, not pure runtime
+overhead, because inference, model loading, scheduling, and the Ollama server are
+variable and usually dominate the small wrapper cost.
+
+### 3. Deterministic microbenchmarks
+
+The helper reports nanoseconds per operation for:
+
+- deterministic route resolution;
+- permission/pattern evaluation;
+- disabled audit logging;
+- enabled append-and-flush audit logging;
+- building a 100-event SHA-256 proof chain;
+- verifying a 100-event proof bundle.
+
+### 4. Synthetic agent and tool rounds
+
+A no-network fake provider measures:
+
+- an agent round without tools;
+- a round with exactly one no-op tool dispatch;
+- the same tool round with audit logging enabled.
+
+The no-op tool increments an atomic counter. The command fails if observed tool
+executions differ from the requested iteration count, preventing duplicate or
+missing dispatches from silently entering the results.
+
+### 5. CPU and process memory
+
+For every process-level run, the harness records:
+
+- wall-clock duration;
+- process CPU time;
+- peak working set;
+- exit code;
+- output sizes;
+- the helper's internal elapsed marker where applicable.
+
+Peak working set covers only the measured benchmark/SC Node process. The
+external Ollama server and model memory are deliberately excluded and this scope
+is repeated in every generated report.
+
+## Raw output
+
+Each run contains:
+
+```text
+environment.json
+micro.jsonl
+raw-process-measurements.csv
+summary.json
+REPORT.md
+fixture-server.stdout.txt
+fixture-server.stderr.txt
+<one stdout/stderr pair per measured process>
+```
+
+`environment.json` records the SC Node commit, dirty-worktree state, Rust/Cargo
+versions, OS, architecture, logical processor count, machine name, CPU, RAM,
+model, prompt, endpoint, and all iteration settings.
+
+## Interpretation rules
+
+1. Never compare a cold result with a warm result.
+2. Use the deterministic fixture for the process-level runtime contribution.
+3. Treat real-model deltas inside normal model variance as inconclusive.
+4. Publish medians, p95, sample counts, and every raw sample—not only an average.
+5. A negative observed real-model difference does not mean SC Node accelerates
+   inference; it means model/server variance exceeded the measured wrapper cost.
+6. Do not generalize one CPU, OS, model, or endpoint to other systems.
+7. Do not convert these measurements into a generic "Rust is X times faster than
+   Python" claim; no Python framework is part of this benchmark.
+
+## Reproducing or extending
+
+The non-published helper lives in
+[`tools/sc-benchmark/`](../tools/sc-benchmark/). New benchmark dimensions should
+be added there and to the harness while preserving:
+
+- identical request semantics between baseline and SC Node;
+- loopback-only deterministic fixtures;
+- `--locked` builds;
+- alternating order;
+- explicit cold/warm separation;
+- raw, machine-readable evidence;
+- no secrets in output.
