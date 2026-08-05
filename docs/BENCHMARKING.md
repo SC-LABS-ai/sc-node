@@ -9,10 +9,13 @@ performance result. Performance claims are accepted only when the raw data,
 commit, environment, model, endpoint, commands, and iteration policy are
 published together.
 
-The repository now includes a reproducible benchmark harness. A first reference
-run is stored under [`benchmarks/`](benchmarks/) when available. Results from one
-machine and model are evidence for that configuration only; they are not a
-universal Rust-vs-Python or SC-Node-vs-framework claim.
+The repository includes a reproducible benchmark harness and a first published
+reference run: [Windows / `qwen:latest` / 2026-08-05](benchmarks/2026-08-05-windows-qwen-latest/).
+That run observed a 1.0742 ms (0.2014%) difference between the independent warm
+wall-clock medians, while a deterministic fixture measured a paired internal
+median of +0.2135 ms. Results from one machine and model are evidence for that
+configuration only; they are not a universal Rust-vs-Python or
+SC-Node-vs-framework claim.
 
 ## Run the complete benchmark
 
@@ -122,8 +125,9 @@ fixture-server.stderr.txt
 ```
 
 `environment.json` records the SC Node commit, dirty-worktree state, Rust/Cargo
-versions, OS, architecture, logical processor count, machine name, CPU, RAM,
-model, prompt, endpoint, and all iteration settings.
+versions, OS, architecture, logical processor count, CPU, RAM, model, prompt,
+endpoint, and all iteration settings. Public result bundles omit the local
+machine name.
 
 ## Interpretation rules
 

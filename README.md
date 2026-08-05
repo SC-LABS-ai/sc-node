@@ -293,9 +293,14 @@ present in the environment.
 
 ## Benchmark status
 
-SC Node is **designed for low overhead**, but **competitive performance is not
-yet proven** and **no benchmark numbers are published**. See
-[docs/BENCHMARKING.md](docs/BENCHMARKING.md) for the intended methodology.
+A first reproducible reference run is published with all raw measurements. On
+the measured Windows/`qwen:latest` configuration, the independent warm medians
+were **533.4315 ms direct** and **534.5057 ms through SC Node** — an observed
+difference of **1.0742 ms (0.2014%)**. A deterministic fixture measured a paired
+internal median of **+0.2135 ms**. These are configuration-specific measurements,
+not a universal framework or Rust-vs-Python claim. See
+[docs/BENCHMARKING.md](docs/BENCHMARKING.md) and the
+[published evidence](docs/benchmarks/2026-08-05-windows-qwen-latest/).
 
 ## Known limitations
 
@@ -321,9 +326,9 @@ See [docs/SECURITY_MODEL.md](docs/SECURITY_MODEL.md) and
 ## Roadmap
 
 Near-term direction (no dates promised) — see [docs/ROADMAP.md](docs/ROADMAP.md):
-stabilize the public Rust API, publish a benchmark methodology and first
-reproducible numbers, verify macOS, wire `sc-memory` into the runtime, and
-complete the OpenRouter adapter.
+stabilize the public Rust API, verify macOS, wire `sc-memory` into the runtime,
+and complete the OpenRouter adapter. The first reproducible benchmark set is now
+published.
 
 ## Contributing
 
