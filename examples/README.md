@@ -10,9 +10,10 @@ annotated config schema referenced by all three.
   cloud calls. Start here.
 - [`nvidia-nim/`](nvidia-nim/README.md) — opt-in cloud provider using your
   own NVIDIA API key, key supplied via environment variable only.
-- [`tool-agent/`](tool-agent/README.md) — a task that exercises the
-  built-in file/shell tools, and how the permission/approval gate decides
-  whether a tool call runs.
+- [`tool-agent/`](tool-agent/README.md) — a reproducible Windows walkthrough for
+  multi-round file and shell use, interactive approvals, audit inspection,
+  denied sensitive files, and workspace-boundary failures. It includes
+  `prepare-demo.ps1` and deterministic `verify-guards.ps1` checks.
 
 ## Before you start
 
