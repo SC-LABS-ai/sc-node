@@ -10,8 +10,9 @@
 ## Maturity
 
 SC Node is in early development (experimental public alpha). The API may change.
-Only Windows has been exercised so far. Do not point it at real credentials or an
-unreviewed workspace before reading [docs/SECURITY_MODEL.md](docs/SECURITY_MODEL.md)
+Windows and Linux are exercised by separate full CI gates; macOS remains
+unverified. Do not point SC Node at real credentials or an unreviewed workspace
+before reading [docs/SECURITY_MODEL.md](docs/SECURITY_MODEL.md)
 and [THREAT_MODEL.md](THREAT_MODEL.md).
 
 ## Reporting a vulnerability (responsible disclosure)
@@ -26,9 +27,10 @@ development version; there is no long-term-support release yet.
 
 - **No telemetry.** SC Node collects and transmits nothing. There are no outbound
   network calls unless you explicitly enable a provider.
-- **Workspace path boundaries.** File tools canonicalize their path argument and
-  check it against a configurable allow/deny list before any filesystem access;
-  an empty allowlist denies everything.
+- **Workspace path boundaries.** File tools normalize and canonicalize their path
+  argument and check it against a configurable allow/deny list before any
+  filesystem access; an empty allowlist denies everything. Windows-specific
+  drive/UNC/NTFS rules and POSIX case-sensitive behavior are tested separately.
 - **Shell isolation.** The shell tool passes arguments as a vector (no shell-string
   interpolation), enforces the working directory, applies a per-call timeout, and
   applies a default deny-pattern list for obviously destructive commands.

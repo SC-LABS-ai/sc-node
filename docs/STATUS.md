@@ -1,6 +1,6 @@
 # SC Node — Status
 
-> **As of:** 2026-08-04 · **Version:** 0.1.0-alpha.2 · **Maturity:** experimental public alpha
+> **As of:** 2026-08-05 · **Version:** 0.1.0-alpha.2 · **Maturity:** experimental public alpha
 
 This is the authoritative status page for SC Node. It is written from direct
 code inspection, not from prior doc claims; where an older document disagrees
@@ -13,7 +13,9 @@ for the honest gaps.
 
 ## Platform & providers
 
-- **Windows tested.** Linux and macOS are unverified.
+- **Windows and Linux tested.** Both run separate full CI gates: format,
+  locked check, Clippy with warnings denied, workspace tests, release build, and
+  CLI smoke. macOS is unverified.
 - **Ollama live-tested** (local, enabled by default).
 - **NVIDIA NIM live-tested** (cloud, opt-in, key via `SC_AGENT_NVIDIA_API_KEY`).
 - OpenRouter adapter is implemented on the shared OpenAI-compatible client but is
@@ -36,7 +38,7 @@ does not use it.
 | OpenRouter provider | partial | Real adapter on the shared client; **not live-tested** |
 | Incremental streaming (cloud) | works | SSE decoded as bytes arrive for OpenAI-compatible providers |
 | Incremental streaming (Ollama) | partial | Collects the full body, then emits events |
-| Workspace path sandboxing | works | Canonicalize + allow/deny; symlink/junction, UNC, device-name, ADS handling |
+| Workspace path sandboxing | works | Platform-aware boundaries: Windows drive/UNC/NTFS rules and POSIX case-sensitive paths; traversal and real Unix symlink escapes tested |
 | Tool permission engine (`check_permission`) | works | Fail-closed; deny wins; family fallback |
 | Central permission gate in the run loop | works | Decision resolved before any tool I/O |
 | Interactive approval gate | partial | Prompts in `repl` on a TTY; `run` and non-TTY `repl` auto-deny (fail-closed) |
@@ -78,7 +80,8 @@ does not use it.
 6. Sandbox has a check-then-open (TOCTOU) window.
 7. `sc-memory` is present but not wired into the runtime.
 8. Ollama streaming is batch-collect (cloud streaming is incremental).
-9. Only verified on Windows; Linux/macOS and the OpenRouter adapter unverified.
+9. Windows and Linux are verified; macOS and the OpenRouter adapter remain
+   unverified.
 10. `cargo audit` / `cargo deny` not wired into CI.
 
 See [../THREAT_MODEL.md](../THREAT_MODEL.md) for detail on the security-relevant
@@ -89,8 +92,9 @@ items and [ROADMAP.md](ROADMAP.md) for what comes next.
 `cargo test --workspace` runs an offline, deterministic inline unit-test suite
 across the crates (routing, permissions, sandbox, providers, contracts, proof,
 audit, config). Live provider calls only run when a real API key is present.
-Windows helpers: `scripts/smoke-check.ps1`, `scripts/verify-local.ps1`,
-`scripts/verify-public-beta.ps1`.
+`scripts/smoke-check.ps1` is exercised on Windows and Linux.
+`scripts/verify-local.ps1` and `scripts/verify-public-beta.ps1` remain additional
+Windows-oriented helpers.
 
 ## Dependencies
 
