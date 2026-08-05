@@ -12,11 +12,6 @@ intent.
   dependencies today, but the API is unstable and unpublished. The goal is a
   documented, semver-respecting surface for at least the core traits
   (`Provider`, `Tool`) and the pure modules (routing, contracts, proof).
-- **Benchmark methodology and first reproducible numbers.** Publish the
-  methodology in [BENCHMARKING.md](BENCHMARKING.md) and then produce a first set
-  of reproducible measurements (direct-provider-call vs through-SC-Node, routing
-  and tool-dispatch overhead). No performance claims will be made before numbers
-  exist.
 - **Wire `sc-memory` into the runtime.** The memory/RAG crate exists but is not
   constructed by the binary. Integrate it behind an explicit, opt-in config
   section and a `memory` feature.
@@ -26,6 +21,11 @@ intent.
 
 ## Recently completed
 
+- **First reproducible overhead benchmark.** Added a locked benchmark helper,
+  deterministic Ollama-compatible fixture, real local-model warm/cold pairs,
+  process CPU/RAM capture, routing/permission/audit/proof microbenchmarks, raw
+  evidence, and a configuration-specific interpretation without a generic
+  framework-speed claim.
 - **Reproducible tool-using examples.** Added an isolated multi-round file/shell
   walkthrough, approval-gate session, audit inspection, denied-call scenarios,
   and deterministic guard checks.

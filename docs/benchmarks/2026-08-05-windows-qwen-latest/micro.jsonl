@@ -1,0 +1,6 @@
+{"benchmark":"routing.resolve_route","iterations":100000,"total_ns":43190400,"ns_per_operation":431.904}
+{"benchmark":"permission.check","iterations":100000,"total_ns":150995800,"ns_per_operation":1509.958}
+{"benchmark":"audit.log_disabled","iterations":1000,"total_ns":314600,"ns_per_operation":314.6}
+{"benchmark":"audit.log_enabled_flush_each","iterations":1000,"total_ns":7448300,"ns_per_operation":7448.3}
+{"benchmark":"proof.build_chain_100_events","iterations":1000,"total_ns":429785500,"ns_per_operation":429785.5}
+{"benchmark":"proof.verify_100_events","iterations":1000,"total_ns":312880400,"ns_per_operation":312880.4}
