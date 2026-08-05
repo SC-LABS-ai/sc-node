@@ -28,6 +28,7 @@ members = [
     "crates/sc-contract",
     "crates/sc-proof",
     "crates/sc-memory",
+    "tools/sc-benchmark",
 ]
 
 [workspace.package]
