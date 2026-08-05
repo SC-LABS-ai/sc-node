@@ -88,6 +88,16 @@ pub struct OpenAiModel {
     pub created: Option<i64>,
     #[serde(default)]
     pub owned_by: Option<String>,
+    /// Human-readable model name when the provider exposes one.
+    #[serde(default)]
+    pub name: Option<String>,
+    /// Provider-reported context window. `u64` avoids rejecting future
+    /// catalogs whose value exceeds SC Node's current `u32` model field.
+    #[serde(default)]
+    pub context_length: Option<u64>,
+    /// Provider-specific request parameters advertised for this model.
+    #[serde(default)]
+    pub supported_parameters: Option<Vec<String>>,
 }
 
 #[derive(Debug, Clone, serde::Deserialize)]

@@ -18,8 +18,9 @@ for the honest gaps.
   CLI smoke. macOS is unverified.
 - **Ollama live-tested** (local, enabled by default).
 - **NVIDIA NIM live-tested** (cloud, opt-in, key via `SC_AGENT_NVIDIA_API_KEY`).
-- OpenRouter adapter is implemented on the shared OpenAI-compatible client but is
-  **not live-tested**.
+- **OpenRouter public catalog/schema verified.** The adapter uses provider-reported
+  model metadata; authenticated streaming completion remains pending because no
+  test key is available.
 
 ## Capability matrix
 
@@ -35,7 +36,7 @@ does not use it.
 | Deterministic provider/model routing | works | 5-step resolution, cloud gated, no silent fallback; prints a `[Route]` line |
 | Ollama provider (list/complete/health) | works | Real HTTP; streaming is batch-collect (see below) |
 | NVIDIA NIM provider (list/complete/health) | works | Shared OpenAI-compatible client; incremental SSE; live-tested |
-| OpenRouter provider | partial | Real adapter on the shared client; **not live-tested** |
+| OpenRouter provider | partial | Catalog/schema verified; authenticated streaming completion pending |
 | Incremental streaming (cloud) | works | SSE decoded as bytes arrive for OpenAI-compatible providers |
 | Incremental streaming (Ollama) | partial | Collects the full body, then emits events |
 | Workspace path sandboxing | works | Platform-aware boundaries: Windows drive/UNC/NTFS rules and POSIX case-sensitive paths; traversal and real Unix symlink escapes tested |
@@ -80,8 +81,8 @@ does not use it.
 6. Sandbox has a check-then-open (TOCTOU) window.
 7. `sc-memory` is present but not wired into the runtime.
 8. Ollama streaming is batch-collect (cloud streaming is incremental).
-9. Windows and Linux are verified; macOS and the OpenRouter adapter remain
-   unverified.
+9. Windows and Linux are verified; macOS remains unverified. OpenRouter's public
+   catalog is verified, while authenticated completion remains pending.
 10. `cargo audit` / `cargo deny` not wired into CI.
 
 See [../THREAT_MODEL.md](../THREAT_MODEL.md) for detail on the security-relevant
@@ -91,7 +92,8 @@ items and [ROADMAP.md](ROADMAP.md) for what comes next.
 
 `cargo test --workspace` runs an offline, deterministic inline unit-test suite
 across the crates (routing, permissions, sandbox, providers, contracts, proof,
-audit, config). Live provider calls only run when a real API key is present.
+audit, config). Credentialed provider smoke tests are ignored by normal CI and
+run explicitly through their verification scripts when a real API key is present.
 `scripts/smoke-check.ps1` is exercised on Windows and Linux.
 `scripts/verify-local.ps1` and `scripts/verify-public-beta.ps1` remain additional
 Windows-oriented helpers.
