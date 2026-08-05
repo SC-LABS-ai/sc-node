@@ -9,6 +9,26 @@ API is unstable during the alpha).
 > development history is archived internally and is intentionally not part of the
 > public git history.
 
+## [Unreleased]
+
+### Added
+
+- **Reproducible tool-agent walkthroughs.** Added an isolated Windows demo,
+  interactive approval and audit examples, denied-boundary scenarios, and four
+  deterministic guard checks.
+- **Linux verification.** Added a separate Ubuntu CI job covering formatting,
+  locked workspace check, Clippy with warnings denied, tests, release build, and
+  cross-platform CLI smoke.
+
+### Changed
+
+- **Reproducible dependency resolution.** `Cargo.lock` is now committed and both
+  platform jobs use `--locked`.
+- **Platform-aware sandbox semantics.** Windows drive/UNC/NTFS protections remain
+  enforced, while POSIX case sensitivity and valid colon/backslash filenames are
+  handled according to Linux filesystem rules. A live Unix symlink-escape test is
+  included.
+
 ## [0.1.0-alpha.2] — 2026-08-04
 
 Second public alpha focused on maintenance, release hygiene, and a more coherent

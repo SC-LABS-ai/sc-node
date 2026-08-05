@@ -85,7 +85,7 @@ What this threat model is trying to protect:
 | T10 | Audit log tampering (an operator or malware truncates/edits the log to hide what happened). | Log is append-only at the file-open level (`OpenOptions::append`). | **Unmitigated.** There is no cryptographic hash chain or signature; the log is append-only by convention/API use, not tamper-evident. (An earlier internal doc comment in the audit crate calls the log "tamper-evident" — that description is aspirational and is corrected here: as implemented, it is append-only, not tamper-evident.) |
 | T11 | SSRF or metadata-endpoint access via a network-capable tool. | **Not applicable in this branch.** No `web_fetch` (or any other network-capable) tool is registered or implemented here — the tool registry in `src/main.rs` only registers `read_file`, `write_file`, `list_dir`, and `shell`. A prior version of this repository's SECURITY.md described a `web_fetch` tool with an SSRF deny-list; that tool does not exist in this codebase today, and the claim has been removed. If/when a network tool is added, it must be designed against this same deny-list threat before shipping. |
 | T12 | Supply-chain compromise of a dependency. | Dependency versions are pinned via `Cargo.lock`; the dependency graph is enumerable (see `docs/DEPENDENCY_INVENTORY.md`). | **Unmitigated by automation.** `cargo audit` / `cargo deny` are not installed in this environment and are not wired into CI in this repository (see docs/STATUS.md). No advisory-database check has been run as part of this work. |
-| T13 | Cross-platform gaps (this branch's testing is Windows-only). | Workspace/permission logic is unit-tested and platform-independent in its logic (path canonicalization, pattern matching). | **Unmitigated.** No Linux/macOS execution has been verified as part of this work; see the capability matrix in docs/STATUS.md. |
+| T13 | Cross-platform gaps. | Separate Windows and Linux CI jobs run locked check, Clippy, tests, release build, and CLI smoke. Sandbox tests cover Windows drive/UNC/NTFS behavior and POSIX case sensitivity, traversal, valid filename semantics, and a live Unix symlink escape. | **Partially mitigated.** macOS remains unverified; OS-level behavior can still differ outside the covered cases. |
 
 ## 6. Explicitly Unmitigated / Known Gaps
 
@@ -116,8 +116,8 @@ table — they are restated plainly:
   parsed but never applied.
 - **No `cargo audit` / `cargo deny` automation** run as part of this
   repository's checks.
-- **Not verified on Linux or macOS**; Windows is the only platform exercised so
-  far.
+- **macOS is not verified.** Windows and Linux run separate full CI gates, but
+  platform behavior outside the covered tests may still differ.
 
 ## 7. Recommended Operator Practices (Today, Given the Above)
 

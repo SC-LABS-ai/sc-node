@@ -240,11 +240,13 @@ pub fn resolve_and_check(
 /// Windows device names that are reserved regardless of directory or
 /// extension (`CON`, `CON.txt`, `con`, ... all resolve to the same device,
 /// never an ordinary file).
+#[cfg(windows)]
 const RESERVED_DEVICE_NAMES: &[&str] = &[
     "CON", "PRN", "AUX", "NUL", "COM1", "COM2", "COM3", "COM4", "COM5", "COM6", "COM7", "COM8",
     "COM9", "LPT1", "LPT2", "LPT3", "LPT4", "LPT5", "LPT6", "LPT7", "LPT8", "LPT9",
 ];
 
+#[cfg(windows)]
 fn is_reserved_device_name(segment: &str) -> bool {
     let base = segment.split('.').next().unwrap_or(segment);
     RESERVED_DEVICE_NAMES
@@ -262,6 +264,28 @@ fn unc_prefix_string(server: &std::ffi::OsStr, share: &std::ffi::OsStr) -> std::
     out.push("\\");
     out.push(share);
     out
+}
+
+#[cfg(windows)]
+fn normalize_normal_segment(segment: &str) -> Result<String, SandboxError> {
+    if segment.contains(':') {
+        return Err(SandboxError::ResolutionFailed(format!(
+            "'{segment}' looks like an NTFS alternate data stream reference, which is not allowed"
+        )));
+    }
+    let trimmed = segment.trim_end_matches(['.', ' ']);
+    let normalized = if trimmed.is_empty() { segment } else { trimmed };
+    if is_reserved_device_name(normalized) {
+        return Err(SandboxError::ResolutionFailed(format!(
+            "'{normalized}' is a reserved Windows device name"
+        )));
+    }
+    Ok(normalized.to_string())
+}
+
+#[cfg(not(windows))]
+fn normalize_normal_segment(segment: &str) -> Result<String, SandboxError> {
+    Ok(segment.to_string())
 }
 
 /// Syntactically normalize a path: expand `~`/env vars, resolve `.`/`..`
@@ -314,23 +338,7 @@ fn normalize_path(path: &Path) -> Result<PathBuf, SandboxError> {
             },
             Component::Normal(segment) => {
                 let segment = segment.to_string_lossy();
-                if segment.contains(':') {
-                    return Err(SandboxError::ResolutionFailed(format!(
-                        "'{segment}' looks like an NTFS alternate data stream reference, which is not allowed"
-                    )));
-                }
-                let trimmed = segment.trim_end_matches(['.', ' ']);
-                let trimmed = if trimmed.is_empty() {
-                    segment.as_ref()
-                } else {
-                    trimmed
-                };
-                if is_reserved_device_name(trimmed) {
-                    return Err(SandboxError::ResolutionFailed(format!(
-                        "'{trimmed}' is a reserved Windows device name"
-                    )));
-                }
-                out.push(trimmed);
+                out.push(normalize_normal_segment(&segment)?);
             }
             other => out.push(other.as_os_str()),
         }
@@ -357,12 +365,21 @@ fn fold_case(s: &str) -> String {
 /// Split an already-`normalize_path`d path into case-folded, separator-
 /// agnostic segments for comparison against a parsed pattern.
 fn path_segments_for_match(normalized: &Path) -> Vec<String> {
-    normalized
-        .to_string_lossy()
-        .split(['/', '\\'])
-        .filter(|s| !s.is_empty())
-        .map(fold_case)
-        .collect()
+    let path = normalized.to_string_lossy();
+    #[cfg(windows)]
+    {
+        path.split(['/', '\\'])
+            .filter(|s| !s.is_empty())
+            .map(fold_case)
+            .collect()
+    }
+    #[cfg(not(windows))]
+    {
+        path.split('/')
+            .filter(|s| !s.is_empty())
+            .map(fold_case)
+            .collect()
+    }
 }
 
 /// Parse a workspace allow/deny pattern into normalized, case-folded path
@@ -377,8 +394,15 @@ fn parse_pattern(pattern: &str) -> (bool, Vec<String>) {
         .map(|v| v.into_owned())
         .unwrap_or(expanded);
 
+    #[cfg(windows)]
     let mut segments: Vec<String> = expanded
         .split(['/', '\\'])
+        .filter(|s| !s.is_empty())
+        .map(fold_case)
+        .collect();
+    #[cfg(not(windows))]
+    let mut segments: Vec<String> = expanded
+        .split('/')
         .filter(|s| !s.is_empty())
         .map(fold_case)
         .collect();
@@ -609,6 +633,7 @@ mod tests {
     // Phase 3: Windows workspace boundary hardening
     // =======================================================================
 
+    #[cfg(windows)]
     #[test]
     fn test_drive_letter_mismatch_is_denied() {
         let config = WorkspaceConfig {
@@ -625,6 +650,7 @@ mod tests {
         ));
     }
 
+    #[cfg(windows)]
     #[test]
     fn test_case_insensitive_workspace_match() {
         let config = WorkspaceConfig {
@@ -641,6 +667,7 @@ mod tests {
         ));
     }
 
+    #[cfg(windows)]
     #[test]
     fn test_case_insensitive_deny_cannot_be_bypassed_by_case() {
         let config = WorkspaceConfig {
@@ -653,6 +680,7 @@ mod tests {
         ));
     }
 
+    #[cfg(windows)]
     #[test]
     fn test_mixed_separators_match_same_as_backslash() {
         let config = WorkspaceConfig {
@@ -669,6 +697,7 @@ mod tests {
         ));
     }
 
+    #[cfg(windows)]
     #[test]
     fn test_traversal_cannot_escape_allowed_root() {
         let config = WorkspaceConfig {
@@ -681,6 +710,7 @@ mod tests {
         ));
     }
 
+    #[cfg(windows)]
     #[test]
     fn test_traversal_past_drive_root_clamps_at_root_without_panicking() {
         // Popping past the root is a no-op (PathBuf::pop returns false when
@@ -690,6 +720,7 @@ mod tests {
         assert_eq!(result.unwrap(), PathBuf::from(r"C:\evil"));
     }
 
+    #[cfg(windows)]
     #[test]
     fn test_traversal_past_drive_root_cannot_escape_to_unintended_allow_match() {
         let config = WorkspaceConfig {
@@ -699,6 +730,7 @@ mod tests {
         assert!(!is_path_allowed(Path::new(r"C:\..\..\..\evil"), &config));
     }
 
+    #[cfg(windows)]
     #[test]
     fn test_absolute_path_outside_any_allowed_root_is_denied() {
         let config = WorkspaceConfig {
@@ -711,6 +743,7 @@ mod tests {
         ));
     }
 
+    #[cfg(windows)]
     #[test]
     fn test_workspace_prefix_confusion_is_not_authorized() {
         // C:\allowed must NOT authorize C:\allowed-evil: our segment-based
@@ -727,6 +760,7 @@ mod tests {
         assert!(is_path_allowed(Path::new(r"C:\allowed\file.txt"), &config));
     }
 
+    #[cfg(windows)]
     #[test]
     fn test_unc_path_allowed_under_matching_share_only() {
         let config = WorkspaceConfig {
@@ -747,6 +781,7 @@ mod tests {
         ));
     }
 
+    #[cfg(windows)]
     #[test]
     fn test_extended_length_verbatim_disk_equivalent_to_plain_form() {
         let config = WorkspaceConfig {
@@ -759,6 +794,7 @@ mod tests {
         ));
     }
 
+    #[cfg(windows)]
     #[test]
     fn test_extended_length_verbatim_unc_equivalent_to_plain_form() {
         let config = WorkspaceConfig {
@@ -771,6 +807,7 @@ mod tests {
         ));
     }
 
+    #[cfg(windows)]
     #[test]
     fn test_device_path_always_denied_even_with_broad_allow() {
         let config = WorkspaceConfig {
@@ -781,6 +818,7 @@ mod tests {
         assert!(!is_path_allowed(Path::new(r"\\.\PhysicalDrive0"), &config));
     }
 
+    #[cfg(windows)]
     #[test]
     fn test_trailing_dot_and_space_cannot_bypass_deny_pattern() {
         let config = WorkspaceConfig {
@@ -805,6 +843,7 @@ mod tests {
         ));
     }
 
+    #[cfg(windows)]
     #[test]
     fn test_reserved_device_names_are_denied() {
         let config = WorkspaceConfig {
@@ -827,6 +866,7 @@ mod tests {
         ));
     }
 
+    #[cfg(windows)]
     #[test]
     fn test_git_and_target_boundaries_denied_anywhere_under_workspace() {
         let config = WorkspaceConfig {
@@ -856,6 +896,7 @@ mod tests {
         ));
     }
 
+    #[cfg(windows)]
     #[test]
     fn test_alternate_data_stream_reference_is_denied() {
         let config = WorkspaceConfig {
@@ -885,6 +926,132 @@ mod tests {
         let missing = existing.join("not_yet_created").join("file.txt");
         assert_eq!(nearest_existing_ancestor(&missing), Some(existing.clone()));
         assert_eq!(nearest_existing_ancestor(&existing), Some(existing));
+    }
+
+    // =======================================================================
+    // Linux / POSIX workspace boundary verification
+    // =======================================================================
+
+    #[cfg(unix)]
+    #[test]
+    fn test_posix_workspace_matching_is_case_sensitive() {
+        let config = WorkspaceConfig {
+            allow: vec!["/tmp/Workspace".to_string()],
+            deny: vec![],
+        };
+        assert!(is_path_allowed(
+            Path::new("/tmp/Workspace/file.txt"),
+            &config
+        ));
+        assert!(!is_path_allowed(
+            Path::new("/tmp/workspace/file.txt"),
+            &config
+        ));
+    }
+
+    #[cfg(unix)]
+    #[test]
+    fn test_posix_traversal_and_absolute_outside_paths_are_denied() {
+        let config = WorkspaceConfig {
+            allow: vec!["/srv/sc-node/workspace".to_string()],
+            deny: vec![],
+        };
+        assert!(!is_path_allowed(
+            Path::new("/srv/sc-node/workspace/../outside/file.txt"),
+            &config
+        ));
+        assert!(!is_path_allowed(Path::new("/etc/hosts"), &config));
+    }
+
+    #[cfg(unix)]
+    #[test]
+    fn test_posix_traversal_past_root_clamps_without_panicking() {
+        let result = normalize_path(Path::new("/../../../../evil")).unwrap();
+        assert_eq!(result, PathBuf::from("/evil"));
+    }
+
+    #[cfg(unix)]
+    #[test]
+    fn test_posix_workspace_prefix_confusion_is_not_authorized() {
+        let config = WorkspaceConfig {
+            allow: vec!["/srv/allowed".to_string()],
+            deny: vec![],
+        };
+        assert!(is_path_allowed(Path::new("/srv/allowed/file.txt"), &config));
+        assert!(!is_path_allowed(
+            Path::new("/srv/allowed-evil/file.txt"),
+            &config
+        ));
+    }
+
+    #[cfg(unix)]
+    #[test]
+    fn test_posix_deny_boundaries_apply_anywhere_under_workspace() {
+        let config = WorkspaceConfig {
+            allow: vec!["/srv/workspace".to_string()],
+            deny: vec![
+                "**/.git/**".to_string(),
+                "**/target/**".to_string(),
+                "**/node_modules/**".to_string(),
+            ],
+        };
+        assert!(!is_path_allowed(
+            Path::new("/srv/workspace/repo/.git/config"),
+            &config
+        ));
+        assert!(!is_path_allowed(
+            Path::new("/srv/workspace/project/target/debug/app"),
+            &config
+        ));
+        assert!(!is_path_allowed(
+            Path::new("/srv/workspace/web/node_modules/pkg/index.js"),
+            &config
+        ));
+        assert!(is_path_allowed(
+            Path::new("/srv/workspace/src/main.rs"),
+            &config
+        ));
+    }
+
+    #[cfg(unix)]
+    #[test]
+    fn test_posix_preserves_valid_colons_device_names_and_backslashes() {
+        let config = WorkspaceConfig {
+            allow: vec!["/srv/workspace".to_string()],
+            deny: vec!["**/blocked.txt".to_string()],
+        };
+        assert!(is_path_allowed(
+            Path::new("/srv/workspace/notes:archive"),
+            &config
+        ));
+        assert!(is_path_allowed(Path::new("/srv/workspace/CON"), &config));
+        assert!(is_path_allowed(
+            Path::new(r"/srv/workspace/dir\name.txt"),
+            &config
+        ));
+    }
+
+    #[cfg(unix)]
+    #[test]
+    fn test_live_symlink_escape_is_denied_on_unix() {
+        use std::os::unix::fs::symlink;
+
+        let dir = tempdir().unwrap();
+        let workspace = dir.path().join("workspace");
+        let outside = dir.path().join("outside");
+        std::fs::create_dir_all(&workspace).unwrap();
+        std::fs::create_dir_all(&outside).unwrap();
+        std::fs::write(outside.join("secret.txt"), b"fixture").unwrap();
+
+        let link = workspace.join("escape");
+        symlink(&outside, &link).unwrap();
+        let config = WorkspaceConfig {
+            allow: vec![workspace.to_string_lossy().to_string()],
+            deny: vec![],
+        };
+
+        assert!(!is_path_allowed(&link.join("secret.txt"), &config));
+        assert!(!is_path_allowed(&link.join("new_file.txt"), &config));
     }
 
     #[cfg(windows)]
