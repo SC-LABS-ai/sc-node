@@ -1,0 +1,142 @@
+{
+  "environment": {
+    "generated_utc": "2026-08-05T15:06:14.6560036+00:00",
+    "repository": "https://github.com/SC-LABS-ai/sc-node",
+    "commit": "5fa4dd4bd5c3266019cbf830b8f9cf8b1b9eb28c",
+    "dirty": false,
+    "model": "qwen:latest",
+    "prompt": "Reply exactly with OK.",
+    "base_url": "http://127.0.0.1:11434",
+    "warm_iterations": 8,
+    "cold_iterations": 3,
+    "model_timeout_secs": 300,
+    "synthetic_iterations": 500,
+    "fixture_iterations": 20,
+    "micro_iterations": 100000,
+    "micro_io_iterations": 1000,
+    "os_description": "Microsoft Windows 10.0.26200 ",
+    "os_architecture": "X64",
+    "process_architecture": "X64",
+    "processor_count": 32,
+    "rustc": "rustc 1.96.0 (ac68faa20 2026-05-25)\nbinary: rustc\ncommit-hash: ac68faa20c58cbccd01ee7208bf3b6e93a7d7f96\ncommit-date: 2026-05-25\nhost: x86_64-pc-windows-msvc\nrelease: 1.96.0\nLLVM version: 22.1.2",
+    "cargo": "cargo 1.96.0 (30a34c682 2026-05-25)",
+    "powershell": "5.1.26100.8875",
+    "memory_scope": "Peak working set is measured for the benchmark helper/SC Node process only; the external Ollama server and model memory are excluded.",
+    "cpu_name": "AMD Ryzen Threadripper 1950X 16-Core Processor",
+    "total_physical_memory_bytes": 68611674112
+  },
+  "fixture_summary": [
+    {
+      "phase": "instant",
+      "mode": "direct",
+      "count": 20,
+      "median_wall_ms": 52.0054,
+      "p95_wall_ms": 67.6077,
+      "median_cpu_ms": 31.25,
+      "median_peak_working_set_bytes": 3254272
+    },
+    {
+      "phase": "instant",
+      "mode": "node",
+      "count": 20,
+      "median_wall_ms": 46.0961,
+      "p95_wall_ms": 62.5989,
+      "median_cpu_ms": 15.625,
+      "median_peak_working_set_bytes": 3256320
+    }
+  ],
+  "provider_summary": [
+    {
+      "phase": "warm",
+      "mode": "direct",
+      "count": 8,
+      "median_wall_ms": 533.4315,
+      "p95_wall_ms": 558.2198,
+      "median_cpu_ms": 23.4375,
+      "median_peak_working_set_bytes": 7094272
+    },
+    {
+      "phase": "warm",
+      "mode": "node",
+      "count": 8,
+      "median_wall_ms": 534.5057,
+      "p95_wall_ms": 555.7163,
+      "median_cpu_ms": 23.4375,
+      "median_peak_working_set_bytes": 7120896
+    },
+    {
+      "phase": "cold",
+      "mode": "direct",
+      "count": 3,
+      "median_wall_ms": 8313.5306,
+      "p95_wall_ms": 8886.8639,
+      "median_cpu_ms": 15.625,
+      "median_peak_working_set_bytes": 7077888
+    },
+    {
+      "phase": "cold",
+      "mode": "node",
+      "count": 3,
+      "median_wall_ms": 8067.1869,
+      "p95_wall_ms": 8595.8981,
+      "median_cpu_ms": 31.25,
+      "median_peak_working_set_bytes": 7143424
+    }
+  ],
+  "comparison": {
+    "fixture_overhead_ms": -5.9093,
+    "fixture_overhead_percent": -11.3629,
+    "real_model_warm_observed_difference_ms": 1.0742,
+    "real_model_warm_observed_difference_percent": 0.2014,
+    "real_model_cold_observed_difference_ms": -246.3437,
+    "real_model_cold_observed_difference_percent": -2.9632
+  },
+  "synthetic_summary": [
+    {
+      "mode": "no_tool",
+      "wall_ms": 85.7505,
+      "cpu_ms": 31.25,
+      "peak_working_set_bytes": 4386816,
+      "internal_ns_per_iteration": 28388
+    },
+    {
+      "mode": "tool_no_audit",
+      "wall_ms": 91.9854,
+      "cpu_ms": 31.25,
+      "peak_working_set_bytes": 6221824,
+      "internal_ns_per_iteration": 57690.2
+    },
+    {
+      "mode": "tool_with_audit",
+      "wall_ms": 649.0539,
+      "cpu_ms": 609.375,
+      "peak_working_set_bytes": 6316032,
+      "internal_ns_per_iteration": 961808.4
+    }
+  ],
+  "caveats": [
+    "Fixture measurements use a deterministic local Ollama-compatible HTTP endpoint and include process startup and output formatting for both paths.",
+    "Real-model provider measurements include model/server variability and are observational differences, not a pure runtime overhead estimate.",
+    "Cold runs deliberately unload the Ollama model before each measured process and are dominated by model loading.",
+    "Warm run order alternates to reduce order bias.",
+    "Peak working set excludes the external Ollama server and model memory.",
+    "This is one machine and one model, not a universal performance claim."
+  ],
+  "validation": {
+    "process_rows": 65,
+    "nonzero_exit_codes": 0,
+    "nonempty_stderr_rows": 0,
+    "paired_differences_ms": {
+      "fixture_internal_median": 0.2135,
+      "fixture_internal_min": -0.6417,
+      "fixture_internal_max": 1.1298,
+      "fixture_wall_median": -1.0581,
+      "real_model_warm_internal_median": 4.5202,
+      "real_model_warm_internal_min": -67.3746,
+      "real_model_warm_internal_max": 54.8552,
+      "real_model_warm_wall_median": -0.1046,
+      "real_model_cold_wall_median": -246.3437
+    },
+    "interpretation": "Differences around zero are treated as measurement or provider variance, not as evidence that SC Node accelerates inference."
+  }
+}

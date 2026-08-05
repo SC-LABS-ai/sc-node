@@ -2200,6 +2200,30 @@ dependencies = [
 ]
 
 [[package]]
+name = "sc-benchmark"
+version = "0.1.0-alpha.2"
+dependencies = [
+ "anyhow",
+ "async-trait",
+ "chrono",
+ "clap",
+ "futures",
+ "reqwest",
+ "sc-agent-core",
+ "sc-audit",
+ "sc-config",
+ "sc-message-types",
+ "sc-proof",
+ "sc-provider-core",
+ "sc-provider-ollama",
+ "sc-tool-core",
+ "serde",
+ "serde_json",
+ "tempfile",
+ "tokio",
+]
+
+[[package]]
 name = "sc-config"
 version = "0.1.0-alpha.2"
 dependencies = [
