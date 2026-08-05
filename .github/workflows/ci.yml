@@ -7,7 +7,7 @@ on:
     branches: [main]
 
 jobs:
-  test:
+  windows:
     name: Build, lint, and test (Windows)
     runs-on: windows-latest
     timeout-minutes: 40
@@ -24,13 +24,45 @@ jobs:
         run: cargo fmt -- --check
 
       - name: Check (workspace)
-        run: cargo check --workspace
+        run: cargo check --workspace --locked
 
       - name: Clippy (workspace, all targets, warnings as errors)
-        run: cargo clippy --workspace --all-targets -- -D warnings
+        run: cargo clippy --workspace --all-targets --locked -- -D warnings
 
       - name: Test (workspace)
-        run: cargo test --workspace
+        run: cargo test --workspace --locked
 
       - name: Build (release)
-        run: cargo build --release
+        run: cargo build --release --locked
+
+  linux:
+    name: Build, lint, and test (Linux)
+    runs-on: ubuntu-latest
+    timeout-minutes: 40
+    steps:
+      - uses: actions/checkout@v6
+
+      - uses: dtolnay/rust-toolchain@stable
+        with:
+          components: rustfmt, clippy
+
+      - uses: Swatinem/rust-cache@v2
+
+      - name: Check formatting
+        run: cargo fmt -- --check
+
+      - name: Check (workspace)
+        run: cargo check --workspace --locked
+
+      - name: Clippy (workspace, all targets, warnings as errors)
+        run: cargo clippy --workspace --all-targets --locked -- -D warnings
+
+      - name: Test (workspace)
+        run: cargo test --workspace --locked
+
+      - name: Build (release)
+        run: cargo build --release --locked
+
+      - name: Smoke check
+        shell: pwsh
+        run: ./scripts/smoke-check.ps1
