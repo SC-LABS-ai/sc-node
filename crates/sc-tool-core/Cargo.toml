@@ -4,6 +4,10 @@ version = { workspace = true }
 edition = { workspace = true }
 license = { workspace = true }
 repository = { workspace = true }
+homepage = { workspace = true }
+rust-version = { workspace = true }
+documentation = "https://docs.rs/sc-tool-core"
+readme = "README.md"
 description = "Core tool traits and approval gates for SC Node"
 categories = { workspace = true }
 keywords = { workspace = true }
@@ -15,6 +19,6 @@ serde = { workspace = true }
 serde_json = { workspace = true }
 thiserror = { workspace = true }
 
-sc-message-types = { path = "../sc-message-types" }
-sc-config = { path = "../sc-config" }
-sc-sandbox = { path = "../sc-sandbox" }
+sc-message-types = { version = "0.1.0-alpha.2", path = "../sc-message-types" }
+sc-config = { version = "0.1.0-alpha.2", path = "../sc-config" }
+sc-sandbox = { version = "0.1.0-alpha.2", path = "../sc-sandbox" }

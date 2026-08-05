@@ -2342,6 +2342,23 @@ dependencies = [
 ]
 
 [[package]]
+name = "sc-public-api-consumer"
+version = "0.0.0"
+dependencies = [
+ "async-trait",
+ "chrono",
+ "futures",
+ "sc-config",
+ "sc-contract",
+ "sc-message-types",
+ "sc-proof",
+ "sc-provider-core",
+ "sc-tool-core",
+ "serde_json",
+ "tokio",
+]
+
+[[package]]
 name = "sc-sandbox"
 version = "0.1.0-alpha.2"
 dependencies = [

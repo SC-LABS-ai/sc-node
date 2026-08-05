@@ -169,9 +169,12 @@ implemented on the same client but has not been live-tested yet.** See
 
 ## Rust API
 
-The workspace crates are **not published to crates.io** and the **API is
-unstable**. You can use them as path dependencies, e.g. the fail-closed
-execution-contract parser:
+The workspace crates are **not published to crates.io yet**. An intentional
+alpha compatibility baseline is documented in
+[docs/API_STABILITY.md](docs/API_STABILITY.md) and compiled from a separate
+consumer crate on Windows and Linux. Transport internals and runtime wiring
+remain experimental. You can use the reviewed crates as path dependencies,
+e.g. the fail-closed execution-contract parser:
 
 ```rust
 // Cargo.toml: sc-contract = { path = "…/sc-node/crates/sc-contract" }
