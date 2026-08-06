@@ -2232,7 +2232,7 @@ dependencies = [
  "serde",
  "shellexpand",
  "tempfile",
- "thiserror 1.0.69",
+ "thiserror 2.0.19",
  "toml",
 ]
 
@@ -2244,7 +2244,7 @@ dependencies = [
  "serde",
  "serde_json",
  "sha2",
- "thiserror 1.0.69",
+ "thiserror 2.0.19",
  "toml",
 ]
 
@@ -2258,7 +2258,7 @@ dependencies = [
  "serde_json",
  "sha2",
  "tempfile",
- "thiserror 1.0.69",
+ "thiserror 2.0.19",
  "tokio",
  "turbovec",
  "uuid",
@@ -2271,7 +2271,7 @@ dependencies = [
  "chrono",
  "serde",
  "serde_json",
- "thiserror 1.0.69",
+ "thiserror 2.0.19",
  "uuid",
 ]
 
@@ -2284,7 +2284,7 @@ dependencies = [
  "serde",
  "serde_json",
  "sha2",
- "thiserror 1.0.69",
+ "thiserror 2.0.19",
 ]
 
 [[package]]
@@ -2297,7 +2297,7 @@ dependencies = [
  "sc-message-types",
  "serde",
  "serde_json",
- "thiserror 1.0.69",
+ "thiserror 2.0.19",
  "tokio",
 ]
 
@@ -2369,7 +2369,7 @@ dependencies = [
  "serde",
  "shellexpand",
  "tempfile",
- "thiserror 1.0.69",
+ "thiserror 2.0.19",
  "tokio",
 ]
 
@@ -2384,7 +2384,7 @@ dependencies = [
  "sc-sandbox",
  "serde",
  "serde_json",
- "thiserror 1.0.69",
+ "thiserror 2.0.19",
 ]
 
 [[package]]
