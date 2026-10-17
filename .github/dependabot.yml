@@ -6,6 +6,11 @@ updates:
       interval: "weekly"
     target-branch: "main"
     open-pull-requests-limit: 5
+    # TurboVec 0.9.0 is an intentionally verified API pin. Do not promote
+    # a major release without migrating and testing the optional backend.
+    ignore:
+      - dependency-name: "turbovec"
+        versions: [">=1.0.0"]
 
   - package-ecosystem: "github-actions"
     directory: "/"
