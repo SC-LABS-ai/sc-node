@@ -25,11 +25,10 @@ chrono = { workspace = true }
 sha2 = { workspace = true }
 tokio = { workspace = true }
 
-# Optional, feature-gated ANN backend. Pinned exact version: this crate's
-# turbovec integration was written and verified against 0.9.0's actual
-# source (vendored from crates.io); do not bump without re-reading the
-# upstream API.
-turbovec = { version = "=0.9.0", optional = true }
+# Optional, feature-gated ANN backend, pinned to tested TurboVec 1.1.2.
+# Keep off by default. The runtime does not construct sc-memory yet.
+# This optional upstream feature requires Rust 1.89+, while default SC Node needs 1.85+.
+turbovec = { version = "=1.1.2", optional = true }
 
 [dev-dependencies]
 tempfile = { workspace = true }

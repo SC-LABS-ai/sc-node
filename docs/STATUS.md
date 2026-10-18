@@ -48,6 +48,7 @@ does not use it.
 | Proof bundles (`proof verify`) | works | SHA-256 hash chain over audit events; secret redaction; not tamper-proof |
 | `config-set` subcommand | stub | Prints "not yet implemented" |
 | `workspace-add` subcommand | stub | Prints the manual config edit to make |
+| Optional TurboVec 1.1.2 accelerated search | works as library feature | Enabled by sc-memory/turbovec only; workspace isolation, fallback and collisions tested in CI. Not wired to the agent runtime. |
 | Memory / RAG (`sc-memory`) | not wired | Crate builds/tests; the binary does not construct it |
 | Windows process hardening (Job Objects, resource limits) | not implemented | No Windows-specific process code |
 | Network-capable tool (e.g. `web_fetch`) | not implemented | Only `read_file`/`write_file`/`list_dir`/`shell` are registered |

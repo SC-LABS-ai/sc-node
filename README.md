@@ -96,7 +96,8 @@ On Windows the binary is `target\release\sc-agent.exe`. You can also run via
 ## Build requirements
 
 - A recent stable Rust toolchain. The workspace uses **edition 2024**, which
-  requires **Rust 1.85 or newer**.
+  requires **Rust 1.85 or newer**. The optional `sc-memory/turbovec`
+  backend requires **Rust 1.89 or newer**.
 - No system libraries beyond what Cargo pulls in (TLS is via `rustls`, not
   OpenSSL).
 
@@ -274,6 +275,7 @@ The fully-commented reference is
 
 ```bash
 cargo test --workspace --locked
+cargo test -p sc-memory --features turbovec --locked  # optional backend
 ```
 
 Cross-platform smoke check (PowerShell 7 on Linux, Windows PowerShell or
