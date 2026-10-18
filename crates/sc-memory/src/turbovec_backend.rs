@@ -7,16 +7,12 @@
 //!
 //! # Upstream API verification
 //!
-//! This module is written against the REAL, verified public API of
-//! `turbovec = "0.9.0"` (<https://docs.rs/turbovec/0.9.0>,
-//! <https://github.com/RyanCodrai/turbovec>). The crate was vendored via
-//! `cargo` from crates.io into the local registry cache and its source
-//! (`src/lib.rs`, `src/id_map.rs`, `src/error.rs`) was read directly
-//! before writing a single line of this module — no type or method here
-//! is invented. In particular, [`turbovec::IdMapIndex::search_with_allowlist`]
-//! is exactly the "workspace allowlist filtering" primitive this backend
-//! needs: turbovec's own vocabulary for "search restricted to a set of
-//! external ids" *is* an allowlist.
+//! This adapter targets the verified TurboVec 1.1.2 Rust API
+//! (<https://docs.rs/turbovec/1.1.2>).
+//! Its IdMapIndex::search_with_allowlist returns Result rather than the
+//! unconditional tuple returned by 0.9.0. A rejected query or stale allowlist
+//! falls back to the reference backend's workspace-restricted exact search.
+//! The id-map still detects UUID-to-u64 collisions before indexing.
 //!
 //! No performance claims are made: this backend has not been benchmarked
 //! in this codebase (no benchmark).
@@ -353,7 +349,15 @@ impl MemoryStore for TurboVecMemoryStore {
         }
 
         let k = query.limit.max(1);
-        let (scores, ids) = index.search_with_allowlist(&query.embedding, k, Some(&allowed));
+        let (scores, ids) = match index.search_with_allowlist(&query.embedding, k, Some(&allowed)) {
+            Ok(found) => found,
+            Err(_) => {
+                // Failed allowlist/query validation must not panic or leak across workspaces.
+                // The durable reference store independently enforces workspace filtering.
+                drop(state);
+                return self.reference.search(query).await;
+            }
+        };
 
         let by_id: HashMap<MemoryId, MemoryEntry> =
             entries.into_iter().map(|e| (e.id, e)).collect();
@@ -540,5 +544,66 @@ mod tests {
         // Falling back for a tag-filtered query must not disturb
         // acceleration for subsequent unfiltered queries.
         assert!(store.is_accelerated().await);
+    }
+    #[tokio::test]
+    async fn test_stale_allowlist_falls_back_without_cross_workspace_results() {
+        let dir = tempdir().unwrap();
+        let store =
+            TurboVecMemoryStore::open(dir.path().join("mem.tv.jsonl"), 8, 4, "fake-hash-v1", 1)
+                .await
+                .unwrap();
+        store
+            .add(entry("indexed-a", "workspace-a", vec![1.0; 8]))
+            .await
+            .unwrap();
+        // Deliberately bypass the ANN index to exercise TurboVec 1.x UnknownId.
+        store
+            .reference
+            .add(entry("late-a", "workspace-a", vec![1.0; 8]))
+            .await
+            .unwrap();
+        store
+            .reference
+            .add(entry("secret-b", "workspace-b", vec![1.0; 8]))
+            .await
+            .unwrap();
+        let results = store
+            .search(&MemoryQuery::new("workspace-a", vec![1.0; 8], 10))
+            .await
+            .unwrap();
+        let texts: Vec<&str> = results.iter().map(|r| r.entry.text.as_str()).collect();
+        assert_eq!(texts.len(), 2);
+        assert!(texts.contains(&"indexed-a"));
+        assert!(texts.contains(&"late-a"));
+        assert!(!texts.contains(&"secret-b"));
+    }
+
+    #[tokio::test]
+    async fn test_colliding_uuid_slots_disable_index_without_losing_data() {
+        let dir = tempdir().unwrap();
+        let store =
+            TurboVecMemoryStore::open(dir.path().join("mem.tv.jsonl"), 8, 4, "fake-hash-v1", 1)
+                .await
+                .unwrap();
+        let mut a = entry("collision-a", "workspace-a", vec![1.0; 8]);
+        a.id = MemoryId(uuid::Uuid::from_u64_pair(0x1020_3040_5060_7080, 1));
+        let mut b = entry("collision-b", "workspace-b", vec![1.0; 8]);
+        b.id = MemoryId(uuid::Uuid::from_u64_pair(0x1020_3040_5060_7080, 2));
+        store.add(a).await.unwrap();
+        store.add(b).await.unwrap();
+        assert!(!store.is_accelerated().await);
+        assert!(store.fallback_reason().await.unwrap().contains("collision"));
+        let found_a = store
+            .search(&MemoryQuery::new("workspace-a", vec![1.0; 8], 10))
+            .await
+            .unwrap();
+        assert_eq!(found_a.len(), 1);
+        assert_eq!(found_a[0].entry.text, "collision-a");
+        let found_b = store
+            .search(&MemoryQuery::new("workspace-b", vec![1.0; 8], 10))
+            .await
+            .unwrap();
+        assert_eq!(found_b.len(), 1);
+        assert_eq!(found_b[0].entry.text, "collision-b");
     }
 }

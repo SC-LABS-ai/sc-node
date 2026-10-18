@@ -1,5 +1,12 @@
 # SC Node — Dependency Inventory & SBOM Generation
 
+> **2026-10-18 migration note:** Optional sc-memory uses turbovec =1.1.2.
+> Cargo.lock was regenerated with cargo update -p turbovec --precise 1.1.2.
+> A fresh locked cargo metadata inventory reports 270 resolved packages:
+> 252 registry packages and 18 local workspace packages.
+> Historical dependency counts below were not recalculated; they are NOT
+> a current SBOM. Regenerate per section 4 for the next release.
+>
 > **Update note (2026-08-04):** the detailed package table below remains the
 > historical July snapshot and must be regenerated per §4 before the next
 > release. The current workspace has **one binary crate (`sc-agent`) plus 15
