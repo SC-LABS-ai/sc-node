@@ -160,26 +160,26 @@ async fn handle_mock_connection(mut stream: TcpStream) -> Result<()> {
             break;
         }
         request.extend_from_slice(&chunk[..read]);
-        if header_end.is_none()
-            && let Some(position) = request.windows(4).position(|window| window == b"\r\n\r\n")
-        {
-            let end = position + 4;
-            header_end = Some(end);
-            let headers = String::from_utf8_lossy(&request[..end]);
-            content_length = headers
-                .lines()
-                .find_map(|line| {
-                    let (name, value) = line.split_once(':')?;
-                    name.eq_ignore_ascii_case("content-length")
-                        .then(|| value.trim().parse::<usize>().ok())
-                        .flatten()
-                })
-                .unwrap_or(0);
+        if header_end.is_none() {
+            if let Some(position) = request.windows(4).position(|window| window == b"\r\n\r\n") {
+                let end = position + 4;
+                header_end = Some(end);
+                let headers = String::from_utf8_lossy(&request[..end]);
+                content_length = headers
+                    .lines()
+                    .find_map(|line| {
+                        let (name, value) = line.split_once(':')?;
+                        name.eq_ignore_ascii_case("content-length")
+                            .then(|| value.trim().parse::<usize>().ok())
+                            .flatten()
+                    })
+                    .unwrap_or(0);
+            }
         }
-        if let Some(end) = header_end
-            && request.len() >= end + content_length
-        {
-            break;
+        if let Some(end) = header_end {
+            if request.len() >= end + content_length {
+                break;
+            }
         }
         if request.len() > 1_048_576 {
             return Err(anyhow!("mock request exceeded 1 MiB"));
