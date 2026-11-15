@@ -425,6 +425,8 @@ impl Config {
     /// (on Windows `dirs::home_dir()` resolves the real profile via the Win32
     /// API and ignores a `USERPROFILE` override, so an explicit path is the
     /// only reliable way to isolate). Falls back to `~/.sc-agent/config.toml`.
+    // Rust 1.85 does not support let-chains; preserve the short-circuit behavior.
+    #[allow(clippy::collapsible_if)]
     pub fn default_path() -> Result<PathBuf, ConfigError> {
         if let Ok(p) = std::env::var("SC_AGENT_CONFIG") {
             if !p.trim().is_empty() {
@@ -464,6 +466,8 @@ impl Config {
     }
 
     /// Apply environment variable overrides.
+    // Rust 1.85 does not support let-chains; retain the conditional overrides.
+    #[allow(clippy::collapsible_if)]
     fn apply_env_overrides(&mut self) {
         // General
         if let Ok(v) = std::env::var("SC_AGENT_LOG_LEVEL") {

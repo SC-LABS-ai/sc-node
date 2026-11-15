@@ -148,6 +148,8 @@ async fn serve_mock_ollama(bind: &str) -> Result<()> {
     }
 }
 
+// Rust 1.85 does not support let-chains; retain the conditional parsing.
+#[allow(clippy::collapsible_if)]
 async fn handle_mock_connection(mut stream: TcpStream) -> Result<()> {
     let mut request = Vec::with_capacity(4096);
     let mut chunk = [0u8; 2048];
