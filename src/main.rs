@@ -63,8 +63,11 @@ async fn main() -> anyhow::Result<()> {
     // Providers
     let mut providers: Vec<Arc<dyn Provider>> = Vec::new();
 
-    if let Some(openrouter_cfg) = &config.providers.openrouter
-        && openrouter_cfg.enabled
+    if let Some(openrouter_cfg) = config
+        .providers
+        .openrouter
+        .as_ref()
+        .filter(|openrouter_cfg| openrouter_cfg.enabled)
     {
         match OpenRouterProvider::new(openrouter_cfg.clone()) {
             Ok(provider) => providers.push(Arc::new(provider)),
@@ -72,8 +75,11 @@ async fn main() -> anyhow::Result<()> {
         }
     }
 
-    if let Some(nvidia_cfg) = &config.providers.nvidia
-        && nvidia_cfg.enabled
+    if let Some(nvidia_cfg) = config
+        .providers
+        .nvidia
+        .as_ref()
+        .filter(|nvidia_cfg| nvidia_cfg.enabled)
     {
         match NvidiaProvider::new(nvidia_cfg.clone()) {
             Ok(provider) => providers.push(Arc::new(provider)),
@@ -81,8 +87,11 @@ async fn main() -> anyhow::Result<()> {
         }
     }
 
-    if let Some(ollama_cfg) = &config.providers.ollama
-        && ollama_cfg.enabled
+    if let Some(ollama_cfg) = config
+        .providers
+        .ollama
+        .as_ref()
+        .filter(|ollama_cfg| ollama_cfg.enabled)
     {
         match OllamaProvider::new(ollama_cfg.clone()) {
             Ok(provider) => providers.push(Arc::new(provider)),
