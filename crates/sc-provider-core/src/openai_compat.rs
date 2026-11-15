@@ -814,9 +814,9 @@ mod tests {
                     let header_text = String::from_utf8_lossy(&buf[..header_end]).to_string();
                     let mut content_length = 0usize;
                     for line in header_text.split("\r\n").skip(1) {
-                        if let Some((k, v)) = line
+                        if let Some((_, v)) = line
                             .split_once(':')
-                            .filter(|(k, v)| k.trim().eq_ignore_ascii_case("content-length"))
+                            .filter(|(k, _)| k.trim().eq_ignore_ascii_case("content-length"))
                         {
                             content_length = v.trim().parse().unwrap_or(0);
                         }
