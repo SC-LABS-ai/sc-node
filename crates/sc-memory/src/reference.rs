@@ -96,8 +96,9 @@ impl ReferenceMemoryStore {
     pub fn open(path: impl AsRef<Path>) -> Result<Self, MemoryError> {
         let path = path.as_ref().to_path_buf();
 
-        if let Some(parent) = path.parent()
-            && !parent.as_os_str().is_empty()
+        if let Some(parent) = path
+            .parent()
+            .filter(|parent| !parent.as_os_str().is_empty())
         {
             std::fs::create_dir_all(parent)?;
         }

@@ -133,9 +133,7 @@ pub struct ChatCompletionOutcome {
 pub fn outcome_to_stream_events(outcome: ChatCompletionOutcome) -> Vec<Result<StreamEvent>> {
     let mut events = Vec::new();
 
-    if let Some(text) = outcome.message.content
-        && !text.is_empty()
-    {
+    if let Some(text) = outcome.message.content.filter(|text| !text.is_empty()) {
         events.push(Ok(StreamEvent::TextDelta { text }));
     }
 
@@ -816,8 +814,9 @@ mod tests {
                     let header_text = String::from_utf8_lossy(&buf[..header_end]).to_string();
                     let mut content_length = 0usize;
                     for line in header_text.split("\r\n").skip(1) {
-                        if let Some((k, v)) = line.split_once(':')
-                            && k.trim().eq_ignore_ascii_case("content-length")
+                        if let Some((k, v)) = line
+                            .split_once(':')
+                            .filter(|(k, v)| k.trim().eq_ignore_ascii_case("content-length"))
                         {
                             content_length = v.trim().parse().unwrap_or(0);
                         }

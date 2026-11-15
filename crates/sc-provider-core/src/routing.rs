@@ -183,9 +183,7 @@ pub fn resolve_route(
     }
 
     // 3. Configured fallback, if enabled.
-    if let Some(fallback) = &config.fallback
-        && fallback.enabled
-    {
+    if let Some(fallback) = config.fallback.as_ref().filter(|fallback| fallback.enabled) {
         reject_default_model(&fallback.model)?;
 
         let provider = find_provider(providers, &fallback.provider)?;
