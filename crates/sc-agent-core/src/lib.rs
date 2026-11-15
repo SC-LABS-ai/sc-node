@@ -197,8 +197,10 @@ impl Session {
             }
             keep
         });
-        if let Some(fb) = &config.fallback
-            && !usable.contains(&fb.provider)
+        if let Some(fb) = config
+            .fallback
+            .as_ref()
+            .filter(|fb| !usable.contains(&fb.provider))
         {
             eprintln!(
                 "[Route] ignoring fallback: provider '{}' is not enabled/registered",

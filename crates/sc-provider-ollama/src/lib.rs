@@ -139,9 +139,7 @@ fn parse_ollama_chat_line(line: &str) -> Option<StreamEvent> {
     }
 
     if let Some(msg) = &chunk.message {
-        if let Some(content) = &msg.content
-            && !content.is_empty()
-        {
+        if let Some(content) = msg.content.as_ref().filter(|content| !content.is_empty()) {
             return Some(StreamEvent::TextDelta {
                 text: content.clone(),
             });

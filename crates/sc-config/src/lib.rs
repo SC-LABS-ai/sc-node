@@ -425,11 +425,13 @@ impl Config {
     /// (on Windows `dirs::home_dir()` resolves the real profile via the Win32
     /// API and ignores a `USERPROFILE` override, so an explicit path is the
     /// only reliable way to isolate). Falls back to `~/.sc-agent/config.toml`.
+    // Rust 1.85 does not support let-chains; preserve the short-circuit behavior.
+    #[allow(clippy::collapsible_if)]
     pub fn default_path() -> Result<PathBuf, ConfigError> {
-        if let Ok(p) = std::env::var("SC_AGENT_CONFIG")
-            && !p.trim().is_empty()
-        {
-            return Ok(PathBuf::from(p));
+        if let Ok(p) = std::env::var("SC_AGENT_CONFIG") {
+            if !p.trim().is_empty() {
+                return Ok(PathBuf::from(p));
+            }
         }
         let home = dirs::home_dir()
             .ok_or_else(|| ConfigError::Validation("Could not determine home directory".into()))?;
@@ -464,6 +466,8 @@ impl Config {
     }
 
     /// Apply environment variable overrides.
+    // Rust 1.85 does not support let-chains; retain the conditional overrides.
+    #[allow(clippy::collapsible_if)]
     fn apply_env_overrides(&mut self) {
         // General
         if let Ok(v) = std::env::var("SC_AGENT_LOG_LEVEL") {
@@ -474,15 +478,15 @@ impl Config {
         }
 
         // Providers - API keys from env
-        if let Some(cfg) = &mut self.providers.openrouter
-            && let Ok(v) = std::env::var("SC_AGENT_OPENROUTER_API_KEY")
-        {
-            cfg.api_key = Some(v);
+        if let Some(cfg) = &mut self.providers.openrouter {
+            if let Ok(v) = std::env::var("SC_AGENT_OPENROUTER_API_KEY") {
+                cfg.api_key = Some(v);
+            }
         }
-        if let Some(cfg) = &mut self.providers.nvidia
-            && let Ok(v) = std::env::var("SC_AGENT_NVIDIA_API_KEY")
-        {
-            cfg.api_key = Some(v);
+        if let Some(cfg) = &mut self.providers.nvidia {
+            if let Ok(v) = std::env::var("SC_AGENT_NVIDIA_API_KEY") {
+                cfg.api_key = Some(v);
+            }
         }
     }
 
