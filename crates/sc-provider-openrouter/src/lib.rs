@@ -268,8 +268,9 @@ mod tests {
         assert!(!key.trim().is_empty(), "OpenRouter key must not be blank");
 
         let mut config = OpenRouterConfig::default();
-        if let Ok(model) = std::env::var("SC_AGENT_OPENROUTER_TEST_MODEL")
-            && !model.trim().is_empty()
+        if let Some(model) = std::env::var("SC_AGENT_OPENROUTER_TEST_MODEL")
+            .ok()
+            .filter(|model| !model.trim().is_empty())
         {
             config.default_model = model;
         }

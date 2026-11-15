@@ -295,9 +295,7 @@ impl SseDecoder {
         let mut events = Vec::new();
         for choice in chunk.choices {
             if let Some(delta) = &choice.delta {
-                if let Some(text) = &delta.content
-                    && !text.is_empty()
-                {
+                if let Some(text) = delta.content.as_ref().filter(|text| !text.is_empty()) {
                     events.push(StreamEvent::TextDelta { text: text.clone() });
                 }
                 if let Some(tool_calls) = &delta.tool_calls {
