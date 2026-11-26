@@ -58,7 +58,7 @@ dirs = "7"
 async-trait = "0.1"
 futures = "0.3"
 tokio-stream = "0.1"
-uuid = { version = "=1.26.1", features = ["v4", "serde"] }
+uuid = { version = "=1.29.3", features = ["v4", "serde"] }
 chrono = { version = "0.4", features = ["serde"] }
 tracing = "0.1"
 tracing-subscriber = { version = "0.3", features = ["env-filter", "fmt"] }
